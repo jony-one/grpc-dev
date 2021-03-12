@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_package = "com.example.grpc";
+option java_multiple_files = true;
+option java_outer_classname = "HelloProto";
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloResponse {
+  string reply = 1;
+}
+
+service HelloService {
+  rpc sayFuchGrp (HelloRequest) returns (HelloResponse);
+}

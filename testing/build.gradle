@@ -12,6 +12,8 @@ evaluationDependsOn(project(':grpc-core').path)
 dependencies {
     api project(':grpc-core'),
             project(':grpc-stub'),
+            project(':grpc-protobuf'),
+            project(':grpc-netty'),
             libraries.junit
 
     censusApiDependency 'implementation'
