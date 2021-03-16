@@ -231,6 +231,7 @@ public abstract class AbstractStream implements Stream {
         return;
       }
       final Link link = PerfMark.linkOut();
+      // 切换线程
       class RequestRunnable implements Runnable {
         @Override public void run() {
           PerfMark.startTask("AbstractStream.request");
@@ -244,7 +245,7 @@ public abstract class AbstractStream implements Stream {
           }
         }
       }
-
+      // 主要步骤
       runOnTransportThread(new RequestRunnable());
     }
 

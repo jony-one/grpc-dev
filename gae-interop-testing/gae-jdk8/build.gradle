@@ -15,9 +15,11 @@
 buildscript {
     // Configuration for building
     repositories {
-        jcenter()    // Bintray's repository - a fast Maven Central mirror & more
-        maven { // The google mirror is less flaky than mavenCentral()
-            url "https://maven-central.storage-download.googleapis.com/maven2/" }
+        maven { url 'https://maven.aliyun.com/repository/public/' }
+        maven { url 'https://maven.aliyun.com/repository/central/' }
+        maven { url 'https://maven.aliyun.com/repository/google/' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
     }
     dependencies {
         classpath 'com.google.cloud.tools:appengine-gradle-plugin:2.3.0'
@@ -35,9 +37,11 @@ description = 'gRPC: gae interop testing (jdk8)'
 repositories {
     // repositories for Jar's you access in your code
     mavenLocal()
-    maven { // The google mirror is less flaky than mavenCentral()
-        url "https://maven-central.storage-download.googleapis.com/maven2/" }
-    jcenter()
+    maven { url 'https://maven.aliyun.com/repository/public/' }
+    maven { url 'https://maven.aliyun.com/repository/central/' }
+    maven { url 'https://maven.aliyun.com/repository/google/' }
+    maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
+    maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
 }
 
 apply plugin: 'com.google.cloud.tools.appengine'  // App Engine tasks

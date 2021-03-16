@@ -131,6 +131,9 @@ public final class ServerCalls {
       // We expect only 1 request, but we ask for 2 requests here so that if a misbehaving client
       // sends more than 1 requests, ServerCall will catch it. Note that disabling auto
       // inbound flow control has no effect on unary calls.
+      // 我们期望只有1个请求，但我们在这里要求有2个请求，这样如果一个不守规矩的客户端发送了超过1个请求，
+      // ServerCall会抓住它。需要注意的是，禁用自动入站流控制对单值调用没有影响。
+      // 主要步骤
       call.request(2);
       return new UnaryServerCallListener(responseObserver, call);
     }
@@ -178,9 +181,10 @@ public final class ServerCalls {
               new Metadata());
           return;
         }
-
+        System.out.println(this.getClass() + ", 发起真正的调用,使用 invoke");
         method.invoke(request, responseObserver);
         request = null;
+        // 响应
         responseObserver.freeze();
         if (wasReady) {
           // Since we are calling invoke in halfClose we have missed the onReady
@@ -377,6 +381,7 @@ public final class ServerCalls {
 
     @Override
     public void onCompleted() {
+      // 完成请求会调用 close
       call.close(Status.OK, new Metadata());
       completed = true;
     }

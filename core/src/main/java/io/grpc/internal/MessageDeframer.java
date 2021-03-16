@@ -170,10 +170,15 @@ public class MessageDeframer implements Closeable, Deframer {
         if (fullStreamDecompressor != null) {
           fullStreamDecompressor.addGzippedBytes(data);
         } else {
+          System.out.println(getClass() + "。5.将待解码的 Buffer 加入到 待处理的 CompositeReadableBuffer 中");
           unprocessed.addBuffer(data);
         }
         needToCloseData = false;
 
+        // TODO 内部的服务路由和调用
+        // 将请求消息体反序列为 Java 的 POJO 对象，即 IDL 中定义的请求参数对象；
+        // 根据请求消息头中的方法名到注册中心查询到对应的服务定义信息；
+        // 通过 Java 本地接口调用方式，调用服务端启动时注册的 IDL 接口实现类。
         deliver();
       }
     } finally {
@@ -255,6 +260,12 @@ public class MessageDeframer implements Closeable, Deframer {
 
   /**
    * Reads and delivers as many messages to the listener as possible.
+   *
+   * 将请求消息体反序列为 Java 的 POJO 对象，即 IDL 中定义的请求参数对象；
+   *
+   * 根据请求消息头中的方法名到注册中心查询到对应的服务定义信息；
+   *
+   * 通过 Java 本地接口调用方式，调用服务端启动时注册的 IDL 接口实现类。
    */
   private void deliver() {
     // We can have reentrancy here when using a direct executor, triggered by calls to
@@ -268,6 +279,7 @@ public class MessageDeframer implements Closeable, Deframer {
       while (!stopDelivery && pendingDeliveries > 0 && readRequiredBytes()) {
         switch (state) {
           case HEADER:
+            System.out.println(getClass() + "。1. 处理消息头，获取压缩标识和消息长度，并进行校验");
             processHeader();
             break;
           case BODY:
@@ -372,6 +384,7 @@ public class MessageDeframer implements Closeable, Deframer {
   /**
    * Processes the GRPC compression header which is composed of the compression flag and the outer
    * frame length.
+   * 处理消息头，获取压缩标识和消息长度，并进行校验
    */
   private void processHeader() {
     int type = nextFrame.readUnsignedByte();
@@ -380,9 +393,11 @@ public class MessageDeframer implements Closeable, Deframer {
           "gRPC frame header malformed: reserved bits not zero")
           .asRuntimeException();
     }
+    // 读取是否是压缩编码的消息
     compressedFlag = (type & COMPRESSED_FLAG_MASK) != 0;
 
     // Update the required length to include the length of the frame.
+    // 获取报文长度
     requiredLength = nextFrame.readInt();
     if (requiredLength < 0 || requiredLength > maxInboundMessageSize) {
       throw Status.RESOURCE_EXHAUSTED.withDescription(
@@ -395,6 +410,7 @@ public class MessageDeframer implements Closeable, Deframer {
     statsTraceCtx.inboundMessage(currentMessageSeqNo);
     transportTracer.reportMessageReceived();
     // Continue reading the frame body.
+    // 继续读 body 信息
     state = State.BODY;
   }
 
@@ -407,8 +423,10 @@ public class MessageDeframer implements Closeable, Deframer {
     // unknown until all bytes are read, and we don't know when it happens.
     statsTraceCtx.inboundMessageRead(currentMessageSeqNo, inboundBodyWireSize, -1);
     inboundBodyWireSize = 0;
+    // 获取压缩数据 或者 未压缩数据
     InputStream stream = compressedFlag ? getCompressedBody() : getUncompressedBody();
     nextFrame = null;
+    System.out.println(getClass() + "。2. 处理消息体,调用 AbstractStream.TransportState.messagesAvailable -> JumpToApplicationThreadServerStreamListener.messagesAvailable");
     listener.messagesAvailable(new SingleMessageProducer(stream));
 
     // Done with this frame, begin processing the next header.

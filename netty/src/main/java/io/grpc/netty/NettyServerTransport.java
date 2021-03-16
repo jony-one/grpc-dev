@@ -128,6 +128,7 @@ class NettyServerTransport implements ServerTransport {
     this.listener = listener;
 
     // Create the Netty handler for the pipeline.
+    // 创建 NettyServerHandler
     grpcHandler = createHandler(listener, channelUnused);
 
     // Notify when the channel closes.
@@ -150,6 +151,7 @@ class NettyServerTransport implements ServerTransport {
     channelUnused.addListener(terminationNotifier);
     channel.closeFuture().addListener(terminationNotifier);
 
+    // 将 NettyServerHandler 添加到 Netty 的 ChannelPipeline 中，接收和发送 HTTP2 消息
     channel.pipeline().addLast(bufferingHandler);
   }
 

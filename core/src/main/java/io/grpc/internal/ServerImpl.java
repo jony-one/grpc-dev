@@ -399,6 +399,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
     }
   }
 
+  // 执行 onDataRead 的过程中发生了线程切换
   private final class ServerTransportListenerImpl implements ServerTransportListener {
     private final ServerTransport transport;
     private Future<?> handshakeTimeoutFuture;
@@ -493,18 +494,24 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
       final StatsTraceContext statsTraceCtx = Preconditions.checkNotNull(
           stream.statsTraceContext(), "statsTraceCtx not present from stream");
 
+      // CancellableContext 创建之后，支持超时取消
+      System.out.println(this.getClass() + "。6.创建 Context.CancellableContext");
       final Context.CancellableContext context = createContext(headers, statsTraceCtx);
 
       final Link link = PerfMark.linkOut();
 
+      // 是 ServerImpl 的内部类，从 ServerStream 跳转到应用线程中进行服务调用，gRPC 服务端的接口调用主要通过 JumpToApplicationThreadServerStreamListener 的 messageRead 和 halfClosed 方法完成；
+      System.out.println(this.getClass() + "。7.创建 JumpToApplicationThreadServerStreamListener");
       final JumpToApplicationThreadServerStreamListener jumpListener
           = new JumpToApplicationThreadServerStreamListener(
           wrappedExecutor, executor, stream, context, tag);
+      // NettyServerStream stream
       stream.setListener(jumpListener);
       // Run in wrappedExecutor so jumpListener.setListener() is called before any callbacks
       // are delivered, including any errors. Callbacks can still be triggered, but they will be
       // queued.
-
+      // 在wrappedExecutor中运行，这样jumpListener.setListener()就会在任何回调(包括任何错误)传递之前被调用。
+      // 回调仍然可以被触发，但是它们将被排队。
       final class StreamCreated extends ContextRunnable {
         StreamCreated() {
           super(context);
@@ -524,6 +531,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
         private void runInternal() {
           ServerStreamListener listener = NOOP_LISTENER;
           try {
+            // 获取服务信息
             ServerMethodDefinition<?, ?> method = registry.lookupMethod(methodName);
             if (method == null) {
               method = fallbackRegistry.lookupMethod(methodName, stream.getAuthority());
@@ -540,6 +548,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
               context.cancel(null);
               return;
             }
+            // 开始调用
             listener = startCall(stream, methodName, method, headers, context, statsTraceCtx, tag);
           } catch (Throwable t) {
             stream.close(Status.fromThrowable(t), new Metadata());
@@ -567,7 +576,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
           context.addListener(new ServerStreamCancellationListener(), directExecutor());
         }
       }
-
+      // 调度，异步执行
       wrappedExecutor.execute(new StreamCreated());
     }
 
@@ -597,18 +606,22 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
         ServerMethodDefinition<ReqT, RespT> methodDef, Metadata headers,
         Context.CancellableContext context, StatsTraceContext statsTraceCtx, Tag tag) {
       // TODO(ejona86): should we update fullMethodName to have the canonical path of the method?
+      // TODO(ejona86): 我们是否应该更新fullMethodName，使其具有该方法的规范路径？
       statsTraceCtx.serverCallStarted(
           new ServerCallInfoImpl<>(
               methodDef.getMethodDescriptor(), // notify with original method descriptor
               stream.getAttributes(),
               stream.getAuthority()));
+
       ServerCallHandler<ReqT, RespT> handler = methodDef.getServerCallHandler();
+
       for (ServerInterceptor interceptor : interceptors) {
         handler = InternalServerInterceptors.interceptCallHandler(interceptor, handler);
       }
       ServerMethodDefinition<ReqT, RespT> interceptedDef = methodDef.withServerCallHandler(handler);
       ServerMethodDefinition<?, ?> wMethodDef = binlog == null
           ? interceptedDef : binlog.wrapMethodDefinition(interceptedDef);
+      // 这里主要步骤
       return startWrappedCall(fullMethodName, wMethodDef, stream, headers, context, tag);
     }
 
@@ -629,7 +642,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
           compressorRegistry,
           serverCallTracer,
           tag);
-
+      // 主要步骤  UnaryServerCallHandler.startCall
       ServerCall.Listener<WReqT> listener =
           methodDef.getServerCallHandler().startCall(call, headers);
       if (listener == null) {
@@ -746,9 +759,14 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
       stream.close(Status.UNKNOWN.withCause(t), new Metadata());
     }
 
+    /**
+     *  处理消息体，
+     * @param producer supplier of deframed messages.
+     */
     @Override
     public void messagesAvailable(final MessageProducer producer) {
       PerfMark.startTask("ServerStreamListener.messagesAvailable", tag);
+
       final Link link = PerfMark.linkOut();
 
       final class MessagesAvailable extends ContextRunnable {
@@ -762,6 +780,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
           PerfMark.startTask("ServerCallListener(app).messagesAvailable", tag);
           PerfMark.linkIn(link);
           try {
+            System.out.println(getClass() + "。3. 异步将消息体反序列化为 POJO 对象，下一步，调用 ServerCallImpl.messagesAvailable");
             getListener().messagesAvailable(producer);
           } catch (Throwable t) {
             internalClose(t);

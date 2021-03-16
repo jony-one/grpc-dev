@@ -97,6 +97,9 @@ import javax.annotation.Nullable;
 /**
  * Server-side Netty handler for GRPC processing. All event handlers are executed entirely within
  * the context of the Netty Channel thread.
+ * 为 Netty HTTP/2 协议 Http2FrameListener 分别提供了 onDataRead 和 onHeadersRead 回调方法，
+ * 所以 gRPC NettyServerHandler 在处理完消息头之后需要缓存上下文，以便后续处理消息体时使用
+ * onDataRead 和 onHeadersRead 方法都是由 Netty 的 NIO 线程负责调度，但是在执行 onDataRead 的过程中发生了线程切换
  */
 class NettyServerHandler extends AbstractNettyHandler {
   private static final Logger logger = Logger.getLogger(NettyServerHandler.class.getName());
@@ -222,12 +225,15 @@ class NettyServerHandler extends AbstractNettyHandler {
     // Create the local flow controller configured to auto-refill the connection window.
     connection.local().flowController(
         new DefaultHttp2LocalFlowController(connection, DEFAULT_WINDOW_UPDATE_RATIO, true));
+    // Netty 服务端创建
+    System.out.println(NettyServerHandler.class + ",Netty 服务端创建 创建");
     frameWriter = new WriteMonitoringFrameWriter(frameWriter, keepAliveEnforcer);
-    Http2ConnectionEncoder encoder =
-        new DefaultHttp2ConnectionEncoder(connection, frameWriter);
+
+    Http2ConnectionEncoder encoder = new DefaultHttp2ConnectionEncoder(connection, frameWriter);
+
     encoder = new Http2ControlFrameLimitEncoder(encoder, 10000);
-    Http2ConnectionDecoder decoder = new DefaultHttp2ConnectionDecoder(connection, encoder,
-        frameReader);
+
+    Http2ConnectionDecoder decoder = new DefaultHttp2ConnectionDecoder(connection, encoder, frameReader);
 
     Http2Settings settings = new Http2Settings();
     settings.initialWindowSize(flowControlWindow);
@@ -324,6 +330,8 @@ class NettyServerHandler extends AbstractNettyHandler {
     this.transportTracer = checkNotNull(transportTracer, "transportTracer");
 
     // Set the frame listener on the decoder.
+    // 设置 Grpc FrameListener
+    System.out.println(NettyServerHandler.class + ", 创建 gRPC FrameListener，作为 Http2FrameListener，监听 HTTP/2 消息的读取");
     decoder().frameListener(new FrameListener());
   }
 
@@ -388,7 +396,10 @@ class NettyServerHandler extends AbstractNettyHandler {
       throws Http2Exception {
     try {
 
+      System.out.println(this.getClass() + "。1.解析请求头：StreamId"+ streamId + "，Header："+headers);
       // Remove the leading slash of the path and get the fully qualified method name
+
+      System.out.println(this.getClass() + "。2.提取接口和方法名");
       CharSequence path = headers.path();
 
       if (path == null) {
@@ -413,6 +424,7 @@ class NettyServerHandler extends AbstractNettyHandler {
         return;
       }
       String contentTypeString = contentType.toString();
+      // 判断是否是：application/grpc
       if (!GrpcUtil.isGrpcContentType(contentTypeString)) {
         respondWithHttpError(ctx, streamId, 415, Status.Code.INTERNAL,
             String.format("Content-Type '%s' is not supported", contentTypeString));
@@ -435,8 +447,10 @@ class NettyServerHandler extends AbstractNettyHandler {
       // The Http2Stream object was put by AbstractHttp2ConnectionHandler before calling this
       // method.
       Http2Stream http2Stream = requireHttp2Stream(streamId);
-
+      // HTTP Header 转换为内部 Metadata 对象
+      System.out.println(this.getClass() + "。3.将 Header 转为 Metadata 对象");
       Metadata metadata = Utils.convertHeaders(headers);
+
       StatsTraceContext statsTraceCtx =
           StatsTraceContext.newServerContext(streamTracerFactories, method, metadata);
 
@@ -452,6 +466,9 @@ class NettyServerHandler extends AbstractNettyHandler {
       PerfMark.startTask("NettyServerHandler.onHeadersRead", state.tag());
       try {
         String authority = getOrUpdateAuthority((AsciiString) headers.authority());
+
+        // 创建 NettyServerStream 对象，它持有了 Sink 和 TransportState 类，负责将消息封装成 GrpcFrameCommand，与底层 Netty 进行交互，实现协议消息的处理；
+        System.out.println(this.getClass() + "。4.创建 NettyServerStream");
         NettyServerStream stream = new NettyServerStream(
             ctx.channel(),
             state,
@@ -459,8 +476,14 @@ class NettyServerHandler extends AbstractNettyHandler {
             authority,
             statsTraceCtx,
             transportTracer);
+
+        //ServerTransportListener 的 streamCreated 方法，在该方法中，主要完成了消息上下文和 gRPC 业务监听器的创建；
+        System.out.println(this.getClass() + "。5.触发 streamCreate");
         transportListener.streamCreated(stream, method, metadata);
+
         state.onStreamAllocated();
+        // 将 NettyServerStream 的 TransportState 缓存到 Netty 的 Http2Stream 中，当处理请求消息体时，可以根据 streamId 获取到 Http2Stream，
+        // 进而根据“streamKey”还原 NettyServerStream 的 TransportState，进行后续处理。
         http2Stream.setProperty(streamKey, state);
       } finally {
         PerfMark.stopTask("NettyServerHandler.onHeadersRead", state.tag());
@@ -484,11 +507,24 @@ class NettyServerHandler extends AbstractNettyHandler {
     return lastKnownAuthority.toString();
   }
 
+  /**
+   * 处理 grpc 消息的入口
+   * @param streamId
+   * @param data
+   * @param padding
+   * @param endOfStream
+   * @throws Http2Exception
+   */
   private void onDataRead(int streamId, ByteBuf data, int padding, boolean endOfStream)
       throws Http2Exception {
     flowControlPing().onDataRead(data.readableBytes(), padding);
     try {
-      NettyServerStream.TransportState stream = serverStream(requireHttp2Stream(streamId));
+      System.out.println(getClass() + "。1.根据 streamId 获取 Http2Stream");
+      Http2Stream http2Stream = requireHttp2Stream(streamId);
+
+      System.out.println(getClass() + "。2.根据 streamKey 获取 TransportState");
+      NettyServerStream.TransportState stream = serverStream(http2Stream);
+
       PerfMark.startTask("NettyServerHandler.onDataRead", stream.tag());
       try {
         stream.inboundDataReceived(data, endOfStream);
@@ -687,6 +723,7 @@ class NettyServerHandler extends AbstractNettyHandler {
 
   /**
    * Sends the response headers to the client.
+   * 响应消息头处理代码
    */
   private void sendResponseHeaders(ChannelHandlerContext ctx, SendResponseHeadersCommand cmd,
       ChannelPromise promise) throws Http2Exception {

@@ -21,8 +21,11 @@ subprojects {
     version = "1.36.0-SNAPSHOT" // CURRENT_GRPC_VERSION
 
     repositories {
-        maven { // The google mirror is less flaky than mavenCentral()
-            url "https://maven-central.storage-download.googleapis.com/maven2/" }
+//        maven { url 'https://maven.aliyun.com/repository/public/' }
+//        maven { url 'https://maven.aliyun.com/repository/central/' }
+//        maven { url 'https://maven.aliyun.com/repository/google/' }
+//        maven { url 'https://maven.aliyun.com/repository/gradle-plugin/' }
+        google()
         mavenCentral()
         mavenLocal()
     }
@@ -36,7 +39,7 @@ subprojects {
         ]
         it.options.encoding = "UTF-8"
         if (rootProject.hasProperty('failOnWarnings') && rootProject.failOnWarnings.toBoolean()) {
-            it.options.compilerArgs += ["-Werror"]
+//            it.options.compilerArgs += ["-Werror"]
         }
     }
 
@@ -302,25 +305,33 @@ subprojects {
         toolVersion = "6.17"
         ignoreFailures = false
         if (rootProject.hasProperty("checkstyle.ignoreFailures")) {
-            ignoreFailures = rootProject.properties["checkstyle.ignoreFailures"].toBoolean()
+            ignoreFailures = true
         }
     }
 
-    if (rootProject.properties.get('errorProne', true)) {
-        dependencies {
-            errorprone 'com.google.errorprone:error_prone_core:2.4.0'
-            errorproneJavac 'com.google.errorprone:javac:9+181-r4173-1'
-        }
-    } else {
-        // Disable Error Prone
-        allprojects {
-            afterEvaluate { project ->
-                project.tasks.withType(JavaCompile) {
-                    options.errorprone.enabled = false
-                }
+    allprojects {
+        afterEvaluate { project ->
+            project.tasks.withType(JavaCompile) {
+                options.errorprone.enabled = false
             }
         }
     }
+
+//    if (rootProject.properties.get('errorProne', true)) {
+//        dependencies {
+//            errorprone 'com.google.errorprone:error_prone_core:2.4.0'
+//            errorproneJavac 'com.google.errorprone:javac:9+181-r4173-1'
+//        }
+//    } else {
+//        // Disable Error Prone
+//        allprojects {
+//            afterEvaluate { project ->
+//                project.tasks.withType(JavaCompile) {
+//                    options.errorprone.enabled = false
+//                }
+//            }
+//        }
+//    }
 
     plugins.withId("java") {
         sourceCompatibility = 1.7

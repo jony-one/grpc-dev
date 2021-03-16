@@ -79,6 +79,8 @@ public final class SerializingExecutor implements Executor, Runnable {
   /**
    * Runs the given runnable strictly after all Runnables that were submitted
    * before it, and using the {@code executor} passed to the constructor.     .
+   * 核心执行引擎，将所有的异步执行全部放到这里执行。
+   * 统一调度
    */
   @Override
   public void execute(Runnable r) {

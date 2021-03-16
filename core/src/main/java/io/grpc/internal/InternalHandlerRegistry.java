@@ -58,8 +58,9 @@ final class InternalHandlerRegistry extends HandlerRegistry {
     // Store per-service first, to make sure services are added/replaced atomically.
     private final HashMap<String, ServerServiceDefinition> services =
         new LinkedHashMap<>();
-
+    // 将调用的接口实现类实例注册到内部的服务注册中心，用于后续的接口调用
     Builder addService(ServerServiceDefinition service) {
+      System.out.println(getClass() + ",将接口注册到注册中心");
       services.put(service.getServiceDescriptor().getName(), service);
       return this;
     }

@@ -214,7 +214,7 @@ final class ServerCallImpl<ReqT, RespT> extends ServerCall<ReqT, RespT> {
         internalClose(Status.INTERNAL.withDescription(MISSING_RESPONSE));
         return;
       }
-
+      // 最终调用 AbstractServerStream  close 方法,发送 OK信息，并返回空的元数据
       stream.close(status, trailers);
     } finally {
       serverCallTracer.reportCallEnded(status.isOk());
@@ -306,6 +306,7 @@ final class ServerCallImpl<ReqT, RespT> extends ServerCall<ReqT, RespT> {
       try {
         while ((message = producer.next()) != null) {
           try {
+            System.out.println(getClass() + "。5.调用 MethodDescriptor.parseRequest 将 PB 流转换为 PB 对象，然后使用 ServerCalls$UnaryServerCallHandler$UnaryServerCallListener.onMessage发起真实的调用");
             listener.onMessage(call.method.parseRequest(message));
           } catch (Throwable t) {
             GrpcUtil.closeQuietly(message);
