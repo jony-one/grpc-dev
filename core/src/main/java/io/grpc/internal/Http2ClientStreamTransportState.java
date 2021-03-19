@@ -80,7 +80,7 @@ public abstract class Http2ClientStreamTransportState extends AbstractClientStre
 
   /**
    * Called by subclasses whenever {@code Headers} are received from the transport.
-   *
+   * 调用请求头接收
    * @param headers the received headers
    */
   protected void transportHeadersReceived(Metadata headers) {
@@ -95,6 +95,9 @@ public abstract class Http2ClientStreamTransportState extends AbstractClientStre
         transportError = Status.INTERNAL.withDescription("Received headers twice");
         return;
       }
+
+      System.out.println(this.getClass() + "===============>" + headers);
+
       Integer httpStatus = headers.get(HTTP2_STATUS);
       if (httpStatus != null && httpStatus >= 100 && httpStatus < 200) {
         // Ignore the headers. See RFC 7540 §8.1

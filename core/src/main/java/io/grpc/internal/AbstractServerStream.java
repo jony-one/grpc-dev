@@ -252,11 +252,11 @@ public abstract class AbstractServerStream extends AbstractStream
     public void inboundDataReceived(ReadableBuffer frame, boolean endOfStream) {
       Preconditions.checkState(!this.endOfStream, "Past end of stream");
       // Deframe the message. If a failure occurs, deframeFailed will be called.
-      System.out.println(getClass() + "。4.调用 MessageDeframe 的 MessageDeframer.deframe ，解码消息体 ");
+      System.out.println(getClass() + "\t4.调用 MessageDeframe 的 MessageDeframer.deframe ，解码消息体 ");
       deframe(frame);
       if (endOfStream) {
 
-        System.out.println(getClass() + "。6.将endOfStream 设为 true 说明 gRPC 消息读取完成");
+        System.out.println(getClass() + "\t6.将endOfStream 设为 true 说明 gRPC 消息读取完成");
         this.endOfStream = true;
         closeDeframer(false);
       }

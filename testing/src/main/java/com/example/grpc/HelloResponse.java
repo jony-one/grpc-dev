@@ -283,7 +283,7 @@ private static final long serialVersionUID = 0L;
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
       // @@protoc_insertion_point(builder_implements:HelloResponse)
-      com.example.grpc.HelloResponseOrBuilder {
+      HelloResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return HelloProto.internal_static_HelloResponse_descriptor;

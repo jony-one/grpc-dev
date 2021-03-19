@@ -1,9 +1,5 @@
 package com.example.grpc;
 
-import io.grpc.Channel;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-
 import static io.grpc.MethodDescriptor.generateFullMethodName;
 
 /**
@@ -49,6 +45,99 @@ public final class HelloServiceGrpc {
     return getSayFuchGrpMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<HelloRequest,
+      HelloResponse> getSayFuchGrpcSStreamMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "sayFuchGrpcSStream",
+      requestType = HelloRequest.class,
+      responseType = HelloResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+  public static io.grpc.MethodDescriptor<HelloRequest,
+      HelloResponse> getSayFuchGrpcSStreamMethod() {
+    io.grpc.MethodDescriptor<HelloRequest, HelloResponse> getSayFuchGrpcSStreamMethod;
+    if ((getSayFuchGrpcSStreamMethod = HelloServiceGrpc.getSayFuchGrpcSStreamMethod) == null) {
+      synchronized (HelloServiceGrpc.class) {
+        if ((getSayFuchGrpcSStreamMethod = HelloServiceGrpc.getSayFuchGrpcSStreamMethod) == null) {
+          HelloServiceGrpc.getSayFuchGrpcSStreamMethod = getSayFuchGrpcSStreamMethod =
+              io.grpc.MethodDescriptor.<HelloRequest, HelloResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.SERVER_STREAMING)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "sayFuchGrpcSStream"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  HelloRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  HelloResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new HelloServiceMethodDescriptorSupplier("sayFuchGrpcSStream"))
+              .build();
+        }
+      }
+    }
+    return getSayFuchGrpcSStreamMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<HelloRequest,
+      HelloResponse> getSayFuchGrpcRStreamMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "sayFuchGrpcRStream",
+      requestType = HelloRequest.class,
+      responseType = HelloResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.CLIENT_STREAMING)
+  public static io.grpc.MethodDescriptor<HelloRequest,
+      HelloResponse> getSayFuchGrpcRStreamMethod() {
+    io.grpc.MethodDescriptor<HelloRequest, HelloResponse> getSayFuchGrpcRStreamMethod;
+    if ((getSayFuchGrpcRStreamMethod = HelloServiceGrpc.getSayFuchGrpcRStreamMethod) == null) {
+      synchronized (HelloServiceGrpc.class) {
+        if ((getSayFuchGrpcRStreamMethod = HelloServiceGrpc.getSayFuchGrpcRStreamMethod) == null) {
+          HelloServiceGrpc.getSayFuchGrpcRStreamMethod = getSayFuchGrpcRStreamMethod =
+              io.grpc.MethodDescriptor.<HelloRequest, HelloResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.CLIENT_STREAMING)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "sayFuchGrpcRStream"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  HelloRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  HelloResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new HelloServiceMethodDescriptorSupplier("sayFuchGrpcRStream"))
+              .build();
+        }
+      }
+    }
+    return getSayFuchGrpcRStreamMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<HelloRequest,
+      HelloResponse> getSayFuchGrpcStreamMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "sayFuchGrpcStream",
+      requestType = HelloRequest.class,
+      responseType = HelloResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
+  public static io.grpc.MethodDescriptor<HelloRequest,
+      HelloResponse> getSayFuchGrpcStreamMethod() {
+    io.grpc.MethodDescriptor<HelloRequest, HelloResponse> getSayFuchGrpcStreamMethod;
+    if ((getSayFuchGrpcStreamMethod = HelloServiceGrpc.getSayFuchGrpcStreamMethod) == null) {
+      synchronized (HelloServiceGrpc.class) {
+        if ((getSayFuchGrpcStreamMethod = HelloServiceGrpc.getSayFuchGrpcStreamMethod) == null) {
+          HelloServiceGrpc.getSayFuchGrpcStreamMethod = getSayFuchGrpcStreamMethod =
+              io.grpc.MethodDescriptor.<HelloRequest, HelloResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.BIDI_STREAMING)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "sayFuchGrpcStream"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  HelloRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  HelloResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new HelloServiceMethodDescriptorSupplier("sayFuchGrpcStream"))
+              .build();
+        }
+      }
+    }
+    return getSayFuchGrpcStreamMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -78,7 +167,6 @@ public final class HelloServiceGrpc {
     return HelloServiceBlockingStub.newStub(factory, channel);
   }
 
-
   /**
    * Creates a new ListenableFuture-style stub that supports unary calls on the service
    */
@@ -105,6 +193,27 @@ public final class HelloServiceGrpc {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSayFuchGrpMethod(), responseObserver);
     }
 
+    /**
+     */
+    public void sayFuchGrpcSStream(HelloRequest request,
+                                   io.grpc.stub.StreamObserver<HelloResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSayFuchGrpcSStreamMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public io.grpc.stub.StreamObserver<HelloRequest> sayFuchGrpcRStream(
+        io.grpc.stub.StreamObserver<HelloResponse> responseObserver) {
+      return io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall(getSayFuchGrpcRStreamMethod(), responseObserver);
+    }
+
+    /**
+     */
+    public io.grpc.stub.StreamObserver<HelloRequest> sayFuchGrpcStream(
+        io.grpc.stub.StreamObserver<HelloResponse> responseObserver) {
+      return io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall(getSayFuchGrpcStreamMethod(), responseObserver);
+    }
+
     @Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -114,6 +223,27 @@ public final class HelloServiceGrpc {
                 HelloRequest,
                 HelloResponse>(
                   this, METHODID_SAY_FUCH_GRP)))
+          .addMethod(
+            getSayFuchGrpcSStreamMethod(),
+            io.grpc.stub.ServerCalls.asyncServerStreamingCall(
+              new MethodHandlers<
+                HelloRequest,
+                HelloResponse>(
+                  this, METHODID_SAY_FUCH_GRPC_SSTREAM)))
+          .addMethod(
+            getSayFuchGrpcRStreamMethod(),
+            io.grpc.stub.ServerCalls.asyncClientStreamingCall(
+              new MethodHandlers<
+                HelloRequest,
+                HelloResponse>(
+                  this, METHODID_SAY_FUCH_GRPC_RSTREAM)))
+          .addMethod(
+            getSayFuchGrpcStreamMethod(),
+            io.grpc.stub.ServerCalls.asyncBidiStreamingCall(
+              new MethodHandlers<
+                HelloRequest,
+                HelloResponse>(
+                  this, METHODID_SAY_FUCH_GRPC_STREAM)))
           .build();
     }
   }
@@ -139,6 +269,30 @@ public final class HelloServiceGrpc {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getSayFuchGrpMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     */
+    public void sayFuchGrpcSStream(HelloRequest request,
+                                   io.grpc.stub.StreamObserver<HelloResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncServerStreamingCall(
+          getChannel().newCall(getSayFuchGrpcSStreamMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public io.grpc.stub.StreamObserver<HelloRequest> sayFuchGrpcRStream(
+        io.grpc.stub.StreamObserver<HelloResponse> responseObserver) {
+      return io.grpc.stub.ClientCalls.asyncClientStreamingCall(
+          getChannel().newCall(getSayFuchGrpcRStreamMethod(), getCallOptions()), responseObserver);
+    }
+
+    /**
+     */
+    public io.grpc.stub.StreamObserver<HelloRequest> sayFuchGrpcStream(
+        io.grpc.stub.StreamObserver<HelloResponse> responseObserver) {
+      return io.grpc.stub.ClientCalls.asyncBidiStreamingCall(
+          getChannel().newCall(getSayFuchGrpcStreamMethod(), getCallOptions()), responseObserver);
+    }
   }
 
   /**
@@ -160,6 +314,14 @@ public final class HelloServiceGrpc {
     public HelloResponse sayFuchGrp(HelloRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getSayFuchGrpMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public java.util.Iterator<HelloResponse> sayFuchGrpcSStream(
+        HelloRequest request) {
+      return io.grpc.stub.ClientCalls.blockingServerStreamingCall(
+          getChannel(), getSayFuchGrpcSStreamMethod(), getCallOptions(), request);
     }
   }
 
@@ -187,6 +349,9 @@ public final class HelloServiceGrpc {
   }
 
   private static final int METHODID_SAY_FUCH_GRP = 0;
+  private static final int METHODID_SAY_FUCH_GRPC_SSTREAM = 1;
+  private static final int METHODID_SAY_FUCH_GRPC_RSTREAM = 2;
+  private static final int METHODID_SAY_FUCH_GRPC_STREAM = 3;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -209,6 +374,10 @@ public final class HelloServiceGrpc {
           serviceImpl.sayFuchGrp((HelloRequest) request,
               (io.grpc.stub.StreamObserver<HelloResponse>) responseObserver);
           break;
+        case METHODID_SAY_FUCH_GRPC_SSTREAM:
+          serviceImpl.sayFuchGrpcSStream((HelloRequest) request,
+              (io.grpc.stub.StreamObserver<HelloResponse>) responseObserver);
+          break;
         default:
           throw new AssertionError();
       }
@@ -219,6 +388,12 @@ public final class HelloServiceGrpc {
     public io.grpc.stub.StreamObserver<Req> invoke(
         io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
+        case METHODID_SAY_FUCH_GRPC_RSTREAM:
+          return (io.grpc.stub.StreamObserver<Req>) serviceImpl.sayFuchGrpcRStream(
+              (io.grpc.stub.StreamObserver<HelloResponse>) responseObserver);
+        case METHODID_SAY_FUCH_GRPC_STREAM:
+          return (io.grpc.stub.StreamObserver<Req>) serviceImpl.sayFuchGrpcStream(
+              (io.grpc.stub.StreamObserver<HelloResponse>) responseObserver);
         default:
           throw new AssertionError();
       }
@@ -271,6 +446,9 @@ public final class HelloServiceGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new HelloServiceFileDescriptorSupplier())
               .addMethod(getSayFuchGrpMethod())
+              .addMethod(getSayFuchGrpcSStreamMethod())
+              .addMethod(getSayFuchGrpcRStreamMethod())
+              .addMethod(getSayFuchGrpcStreamMethod())
               .build();
         }
       }

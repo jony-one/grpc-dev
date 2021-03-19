@@ -21,13 +21,14 @@ import javax.annotation.concurrent.ThreadSafe;
 
 /**
  * A {@link Channel} that provides lifecycle management.
+ * ManagedChannel 是对 Transport 层 SocketChannel 的抽象
  */
 @ThreadSafe
 public abstract class ManagedChannel extends Channel {
   /**
    * Initiates an orderly shutdown in which preexisting calls continue but new calls are immediately
    * cancelled.
-   *
+   * 关闭 Channel
    * @return this
    * @since 1.0.0
    */

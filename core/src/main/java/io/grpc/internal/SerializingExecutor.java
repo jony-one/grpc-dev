@@ -31,6 +31,7 @@ import javax.annotation.Nullable;
  * Executor ensuring that all {@link Runnable} tasks submitted are executed in order
  * using the provided {@link Executor}, and serially such that no two will ever be
  * running at the same time.
+ * 统一调度模型
  */
 // TODO(madongfly): figure out a way to not expose it or move it to transport package.
 public final class SerializingExecutor implements Executor, Runnable {
@@ -62,6 +63,7 @@ public final class SerializingExecutor implements Executor, Runnable {
   private final Executor executor;
 
   /** A list of Runnables to be run in order. */
+  /** 任务队列 */
   private final Queue<Runnable> runQueue = new ConcurrentLinkedQueue<>();
 
   private volatile int runState = STOPPED;

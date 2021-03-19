@@ -128,12 +128,8 @@ class Utils {
     if (Boolean.parseBoolean(
             System.getProperty("io.grpc.netty.useCustomAllocator", "true"))) {
       boolean defaultPreferDirect = PooledByteBufAllocator.defaultPreferDirect();
-      logger.log(
-          Level.FINE,
-          String.format(
-              "Using custom allocator: forceHeapBuffer=%s, defaultPreferDirect=%s",
-              forceHeapBuffer,
-              defaultPreferDirect));
+      logger.log(Level.FINE, String.format("Using custom allocator: forceHeapBuffer=%s, defaultPreferDirect=%s", forceHeapBuffer,defaultPreferDirect));
+
       if (forceHeapBuffer || !defaultPreferDirect) {
         return ByteBufAllocatorPreferHeapHolder.allocator;
       } else {

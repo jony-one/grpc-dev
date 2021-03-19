@@ -926,6 +926,7 @@ class NettyClientHandler extends AbstractNettyHandler {
         boolean exclusive,
         int padding,
         boolean endStream) throws Http2Exception {
+      System.out.println(this.getClass() + "============> 读取响应头" + headers);
       NettyClientHandler.this.onHeadersRead(streamId, headers, endStream);
     }
 

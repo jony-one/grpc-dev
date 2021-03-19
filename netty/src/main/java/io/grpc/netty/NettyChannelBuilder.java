@@ -271,7 +271,7 @@ public final class NettyChannelBuilder extends
 
   /**
    * Sets the negotiation type for the HTTP/2 connection.
-   *
+   * 设置HTTP/2连接的协商类型。
    * <p>Default: <code>TLS</code>
    */
   public NettyChannelBuilder negotiationType(NegotiationType type) {

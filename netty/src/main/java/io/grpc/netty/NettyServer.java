@@ -204,9 +204,12 @@ class NettyServer implements InternalServer, InternalWithLogId {
     final ServerBootstrap b = new ServerBootstrap();
     b.option(ALLOCATOR, Utils.getByteBufAllocator(forceHeapBuffer));
     b.childOption(ALLOCATOR, Utils.getByteBufAllocator(forceHeapBuffer));
+    // BOSS 线程，Work 线程
     b.group(bossExecutor, workerGroup);
+    // 资源池
     b.channelFactory(channelFactory);
     // For non-socket based channel, the option will be ignored.
+    // 长连接
     b.childOption(SO_KEEPALIVE, true);
 
     if (channelOptions != null) {

@@ -495,13 +495,13 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
           stream.statsTraceContext(), "statsTraceCtx not present from stream");
 
       // CancellableContext 创建之后，支持超时取消
-      System.out.println(this.getClass() + "。6.创建 Context.CancellableContext");
+      System.out.println(this.getClass() + "\t6.创建 Context.CancellableContext");
       final Context.CancellableContext context = createContext(headers, statsTraceCtx);
 
       final Link link = PerfMark.linkOut();
 
       // 是 ServerImpl 的内部类，从 ServerStream 跳转到应用线程中进行服务调用，gRPC 服务端的接口调用主要通过 JumpToApplicationThreadServerStreamListener 的 messageRead 和 halfClosed 方法完成；
-      System.out.println(this.getClass() + "。7.创建 JumpToApplicationThreadServerStreamListener");
+      System.out.println(this.getClass() + "\t7.创建 JumpToApplicationThreadServerStreamListener");
       final JumpToApplicationThreadServerStreamListener jumpListener
           = new JumpToApplicationThreadServerStreamListener(
           wrappedExecutor, executor, stream, context, tag);
@@ -780,7 +780,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
           PerfMark.startTask("ServerCallListener(app).messagesAvailable", tag);
           PerfMark.linkIn(link);
           try {
-            System.out.println(getClass() + "。3. 异步将消息体反序列化为 POJO 对象，下一步，调用 ServerCallImpl.messagesAvailable");
+            System.out.println(getClass() + "\t3. 异步将消息体反序列化为 POJO 对象，下一步，调用 ServerCallImpl.messagesAvailable");
             getListener().messagesAvailable(producer);
           } catch (Throwable t) {
             internalClose(t);

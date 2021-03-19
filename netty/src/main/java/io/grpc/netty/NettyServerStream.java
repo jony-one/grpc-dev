@@ -224,7 +224,7 @@ class NettyServerStream extends AbstractServerStream {
 
     void inboundDataReceived(ByteBuf frame, boolean endOfStream) {
 
-      System.out.println(getClass() + "。3.将消息封装成 NettyReadableBuffer ");
+      System.out.println(getClass() + "\t3.将消息封装成 NettyReadableBuffer ");
       NettyReadableBuffer nettyReadableBuffer = new NettyReadableBuffer(frame.retain());
 
 

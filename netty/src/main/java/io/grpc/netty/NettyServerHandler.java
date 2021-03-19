@@ -28,6 +28,7 @@ import static io.grpc.netty.Utils.TE_HEADER;
 import static io.grpc.netty.Utils.TE_TRAILERS;
 import static io.netty.handler.codec.http2.DefaultHttp2LocalFlowController.DEFAULT_WINDOW_UPDATE_RATIO;
 
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -46,6 +47,7 @@ import io.grpc.internal.StatsTraceContext;
 import io.grpc.internal.TransportTracer;
 import io.grpc.netty.GrpcHttp2HeadersUtils.GrpcHttp2ServerHeadersDecoder;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufHolder;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -396,10 +398,10 @@ class NettyServerHandler extends AbstractNettyHandler {
       throws Http2Exception {
     try {
 
-      System.out.println(this.getClass() + "。1.解析请求头：StreamId"+ streamId + "，Header："+headers);
+      System.out.println(this.getClass() + "\t1.解析请求头：StreamId"+ streamId + "，Header："+headers);
       // Remove the leading slash of the path and get the fully qualified method name
 
-      System.out.println(this.getClass() + "。2.提取接口和方法名");
+      System.out.println(this.getClass() + "\t2.提取接口和方法名");
       CharSequence path = headers.path();
 
       if (path == null) {
@@ -468,7 +470,7 @@ class NettyServerHandler extends AbstractNettyHandler {
         String authority = getOrUpdateAuthority((AsciiString) headers.authority());
 
         // 创建 NettyServerStream 对象，它持有了 Sink 和 TransportState 类，负责将消息封装成 GrpcFrameCommand，与底层 Netty 进行交互，实现协议消息的处理；
-        System.out.println(this.getClass() + "。4.创建 NettyServerStream");
+        System.out.println(this.getClass() + "\t4.创建 NettyServerStream");
         NettyServerStream stream = new NettyServerStream(
             ctx.channel(),
             state,
@@ -478,7 +480,7 @@ class NettyServerHandler extends AbstractNettyHandler {
             transportTracer);
 
         //ServerTransportListener 的 streamCreated 方法，在该方法中，主要完成了消息上下文和 gRPC 业务监听器的创建；
-        System.out.println(this.getClass() + "。5.触发 streamCreate");
+        System.out.println(this.getClass() + "\t5.触发 streamCreate");
         transportListener.streamCreated(stream, method, metadata);
 
         state.onStreamAllocated();
@@ -519,10 +521,10 @@ class NettyServerHandler extends AbstractNettyHandler {
       throws Http2Exception {
     flowControlPing().onDataRead(data.readableBytes(), padding);
     try {
-      System.out.println(getClass() + "。1.根据 streamId 获取 Http2Stream");
+      System.out.println(getClass() + "\t1.根据 streamId 获取 Http2Stream");
       Http2Stream http2Stream = requireHttp2Stream(streamId);
 
-      System.out.println(getClass() + "。2.根据 streamKey 获取 TransportState");
+      System.out.println(getClass() + "\t2.根据 streamKey 获取 TransportState");
       NettyServerStream.TransportState stream = serverStream(http2Stream);
 
       PerfMark.startTask("NettyServerHandler.onDataRead", stream.tag());
@@ -715,6 +717,7 @@ class NettyServerHandler extends AbstractNettyHandler {
         closeStreamWhenDone(promise, cmd.stream().id());
       }
       // Call the base class to write the HTTP/2 DATA frame.
+
       encoder().writeData(ctx, cmd.stream().id(), cmd.content(), 0, cmd.endStream(), promise);
     } finally {
       PerfMark.stopTask("NettyServerHandler.sendGrpcFrame", cmd.stream().tag());

@@ -47,6 +47,7 @@ final class SendGrpcFrameCommand extends DefaultByteBufHolder implements WriteQu
   }
 
   StreamIdHolder stream() {
+    System.out.println(stream);
     return stream;
   }
 

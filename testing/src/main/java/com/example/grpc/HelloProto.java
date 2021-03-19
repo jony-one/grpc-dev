@@ -35,9 +35,13 @@ public final class HelloProto {
     String[] descriptorData = {
       "\n\021hello_world.proto\"\034\n\014HelloRequest\022\014\n\004n" +
       "ame\030\001 \001(\t\"\036\n\rHelloResponse\022\r\n\005reply\030\001 \001(" +
-      "\t2;\n\014HelloService\022+\n\nsayFuchGrp\022\r.HelloR" +
-      "equest\032\016.HelloResponseB \n\020com.example.gr" +
-      "pcB\nHelloProtoP\001b\006proto3"
+      "\t2\341\001\n\014HelloService\022+\n\nsayFuchGrp\022\r.Hello" +
+      "Request\032\016.HelloResponse\0225\n\022sayFuchGrpcSS" +
+      "tream\022\r.HelloRequest\032\016.HelloResponse0\001\0225" +
+      "\n\022sayFuchGrpcRStream\022\r.HelloRequest\032\016.He" +
+      "lloResponse(\001\0226\n\021sayFuchGrpcStream\022\r.Hel" +
+      "loRequest\032\016.HelloResponse(\0010\001B \n\020com.exa" +
+      "mple.grpcB\nHelloProtoP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

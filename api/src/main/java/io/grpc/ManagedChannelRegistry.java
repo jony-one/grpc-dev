@@ -95,7 +95,7 @@ public final class ManagedChannelRegistry {
     if (instance == null) {
       List<ManagedChannelProvider> providerList = ServiceProviders.loadAll(
           ManagedChannelProvider.class,
-          getHardCodedClasses(),
+          getHardCodedClasses(), // 获取服务提供者类，核心步骤
           ManagedChannelProvider.class.getClassLoader(),
           new ManagedChannelPriorityAccessor());
       instance = new ManagedChannelRegistry();
@@ -105,6 +105,7 @@ public final class ManagedChannelRegistry {
           instance.addProvider(provider);
         }
       }
+      // 排序
       instance.refreshProviders();
     }
     return instance;

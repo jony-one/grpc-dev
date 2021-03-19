@@ -123,7 +123,7 @@ public abstract class LoadBalancer {
    * but may be flattened into a single list if needed.
    *
    * <p>Implementations should not modify the given {@code servers}.
-   *
+   * 选址，解析地址
    * @param servers the resolved server addresses, never empty.
    * @param attributes extra information from naming system.
    * @deprecated override {@link #handleResolvedAddresses(ResolvedAddresses) instead}

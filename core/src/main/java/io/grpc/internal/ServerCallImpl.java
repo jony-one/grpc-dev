@@ -97,7 +97,7 @@ final class ServerCallImpl<ReqT, RespT> extends ServerCall<ReqT, RespT> {
   public void sendHeaders(Metadata headers) {
     PerfMark.startTask("ServerCall.sendHeaders", tag);
     try {
-      sendHeadersInternal(headers);
+      sendHeadersInternal(headers);  // 发送请求头
     } finally {
       PerfMark.stopTask("ServerCall.sendHeaders", tag);
     }
@@ -306,7 +306,7 @@ final class ServerCallImpl<ReqT, RespT> extends ServerCall<ReqT, RespT> {
       try {
         while ((message = producer.next()) != null) {
           try {
-            System.out.println(getClass() + "。5.调用 MethodDescriptor.parseRequest 将 PB 流转换为 PB 对象，然后使用 ServerCalls$UnaryServerCallHandler$UnaryServerCallListener.onMessage发起真实的调用");
+            System.out.println(getClass() + "\t5.调用 MethodDescriptor.parseRequest 将 PB 流转换为 PB 对象，然后使用 ServerCalls$UnaryServerCallHandler$UnaryServerCallListener.onMessage发起真实的调用");
             listener.onMessage(call.method.parseRequest(message));
           } catch (Throwable t) {
             GrpcUtil.closeQuietly(message);

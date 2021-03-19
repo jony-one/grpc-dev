@@ -252,6 +252,7 @@ final class ClientCallImpl<ReqT, RespT> extends ClientCall<ReqT, RespT> {
     if (!deadlineExceeded) {
       logIfContextNarrowedTimeout(
           effectiveDeadline, context.getDeadline(), callOptions.getDeadline());
+      // 获取 Stream，和负载均衡
       stream = clientStreamProvider.newStream(method, callOptions, headers, context);
     } else {
       stream = new FailingClientStream(

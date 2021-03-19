@@ -28,6 +28,7 @@ import java.io.Closeable;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.zip.DataFormatException;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -170,7 +171,7 @@ public class MessageDeframer implements Closeable, Deframer {
         if (fullStreamDecompressor != null) {
           fullStreamDecompressor.addGzippedBytes(data);
         } else {
-          System.out.println(getClass() + "。5.将待解码的 Buffer 加入到 待处理的 CompositeReadableBuffer 中");
+          System.out.println(getClass() + "\t5.将待解码的 Buffer 加入到 待处理的 CompositeReadableBuffer 中");
           unprocessed.addBuffer(data);
         }
         needToCloseData = false;
@@ -279,7 +280,7 @@ public class MessageDeframer implements Closeable, Deframer {
       while (!stopDelivery && pendingDeliveries > 0 && readRequiredBytes()) {
         switch (state) {
           case HEADER:
-            System.out.println(getClass() + "。1. 处理消息头，获取压缩标识和消息长度，并进行校验");
+            System.out.println(getClass() + "\t 1. 处理消息头，获取压缩标识和消息长度，并进行校验");
             processHeader();
             break;
           case BODY:
@@ -388,6 +389,11 @@ public class MessageDeframer implements Closeable, Deframer {
    */
   private void processHeader() {
     int type = nextFrame.readUnsignedByte();
+
+//    byte[] bytes = new byte[nextFrame.readableBytes()];
+//    nextFrame.readBytes(bytes,0,nextFrame.readableBytes());
+//    System.out.println(this.getClass() + "=============>" +Arrays.toString(bytes));
+
     if ((type & RESERVED_MASK) != 0) {
       throw Status.INTERNAL.withDescription(
           "gRPC frame header malformed: reserved bits not zero")
@@ -425,8 +431,14 @@ public class MessageDeframer implements Closeable, Deframer {
     inboundBodyWireSize = 0;
     // 获取压缩数据 或者 未压缩数据
     InputStream stream = compressedFlag ? getCompressedBody() : getUncompressedBody();
+    try {
+      System.out.println(stream.available());
+      System.out.println(stream.available());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
     nextFrame = null;
-    System.out.println(getClass() + "。2. 处理消息体,调用 AbstractStream.TransportState.messagesAvailable -> JumpToApplicationThreadServerStreamListener.messagesAvailable");
+    System.out.println(getClass() + "\t2. 处理消息体,    调用 AbstractStream.TransportState.messagesAvailable -> JumpToApplicationThreadServerStreamListener.messagesAvailable");
     listener.messagesAvailable(new SingleMessageProducer(stream));
 
     // Done with this frame, begin processing the next header.
@@ -436,6 +448,11 @@ public class MessageDeframer implements Closeable, Deframer {
 
   private InputStream getUncompressedBody() {
     statsTraceCtx.inboundUncompressedSize(nextFrame.readableBytes());
+
+//    byte[] bytes = new byte[nextFrame.readableBytes()];
+//    nextFrame.readBytes(bytes,0,nextFrame.readableBytes());
+//    System.out.println(this.getClass() + "====>" + Arrays.toString(bytes));
+
     return ReadableBuffers.openStream(nextFrame, true);
   }
 

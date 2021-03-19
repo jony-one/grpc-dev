@@ -1,15 +1,15 @@
 package com.example.grpc;
 
+import com.example.service.GreeterImpl;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
-import io.grpc.netty.NettyServerBuilder;
 
 import java.io.IOException;
 
 public class GreeterServer {
 
     public static void main(String[] args) {
-        int port = 50051;
+        int port = 15001;
         Server server = null;
         try {
 //            server = NettyServerBuilder.forPort(port)

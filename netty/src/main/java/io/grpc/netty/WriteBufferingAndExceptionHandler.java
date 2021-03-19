@@ -39,6 +39,9 @@ import java.util.logging.Logger;
  * {@link #failWrites(Throwable)} is called. This handler allows us to
  * write to a {@link io.netty.channel.Channel} before we are allowed to write to it officially
  * i.e.  before it's active or the TLS Handshake is complete.
+ * 缓冲所有写入，直到调用{@link#writeBufferedAndRemove(ChannelHandlerContext)}或{@link#ailWrites(Throwable)}。
+ * 此处理程序允许我们在被允许正式写入之前写入{@link io.netty.channel.Channel}
+ * ie 在其激活或TLS握手完成之前。
  */
 final class WriteBufferingAndExceptionHandler extends ChannelDuplexHandler {
   private static final Logger logger =

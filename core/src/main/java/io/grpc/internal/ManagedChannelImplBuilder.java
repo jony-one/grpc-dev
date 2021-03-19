@@ -608,9 +608,9 @@ public final class ManagedChannelImplBuilder
   public ManagedChannel build() {
     return new ManagedChannelOrphanWrapper(new ManagedChannelImpl(
         this,
-        clientTransportFactoryBuilder.buildClientTransportFactory(),
-        new ExponentialBackoffPolicy.Provider(),
-        SharedResourcePool.forResource(GrpcUtil.SHARED_CHANNEL_EXECUTOR),
+        clientTransportFactoryBuilder.buildClientTransportFactory(), // 构建 NettyTransportFactory
+        new ExponentialBackoffPolicy.Provider(), // 重试策略
+        SharedResourcePool.forResource(GrpcUtil.SHARED_CHANNEL_EXECUTOR), // 共享资源池
         GrpcUtil.STOPWATCH_SUPPLIER,
         getEffectiveInterceptors(),
         TimeProvider.SYSTEM_TIME_PROVIDER));
@@ -618,6 +618,7 @@ public final class ManagedChannelImplBuilder
 
   // Temporarily disable retry when stats or tracing is enabled to avoid breakage, until we know
   // what should be the desired behavior for retry + stats/tracing.
+  // 当启用统计或跟踪时，暂时禁用重试，以避免破损，直到我们知道重试+统计/跟踪的理想行为应该是什么。
   // TODO(zdapeng): FIX IT
   @VisibleForTesting
   List<ClientInterceptor> getEffectiveInterceptors() {

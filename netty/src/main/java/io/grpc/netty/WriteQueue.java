@@ -125,6 +125,8 @@ class WriteQueue {
       int i = 0;
       boolean flushedOnce = false;
       while ((cmd = queue.poll()) != null) {
+        System.out.println(cmd);
+        System.out.println(cmd);
         cmd.run(channel);
         if (++i == DEQUE_CHUNK_SIZE) {
           i = 0;

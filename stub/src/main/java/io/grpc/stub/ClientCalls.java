@@ -232,7 +232,8 @@ public final class ClientCalls {
    */
   private static <V> V getUnchecked(Future<V> future) {
     try {
-      return future.get();
+      V v = future.get();
+      return v;
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       throw Status.CANCELLED
@@ -329,6 +330,7 @@ public final class ClientCalls {
   private static <ReqT, RespT> void startCall(
       ClientCall<ReqT, RespT> call,
       StartableListener<RespT> responseListener) {
+    // 开始调用监听
     call.start(responseListener, new Metadata());
     responseListener.onStart();
   }
@@ -508,6 +510,7 @@ public final class ClientCalls {
 
     @Override
     public void onHeaders(Metadata headers) {
+      System.out.println(headers);
     }
 
     @Override
