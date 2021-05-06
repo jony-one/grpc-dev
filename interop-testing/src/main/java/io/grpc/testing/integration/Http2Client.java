@@ -44,7 +44,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Client application for the {@link TestServiceGrpc.TestServiceImplBase} that runs through a series
+ * Client application for the {@link Metrics.TestServiceGrpc.TestServiceImplBase} that runs through a series
  * of HTTP/2 interop tests. The tests are designed to simulate incorrect behavior on the part of the
  * server. Some of the test cases require server-side checks and do not have assertions within the
  * client code.
@@ -86,8 +86,8 @@ public final class Http2Client {
   private ListeningExecutorService threadpool;
 
   ManagedChannel channel;
-  TestServiceGrpc.TestServiceBlockingStub blockingStub;
-  TestServiceGrpc.TestServiceStub asyncStub;
+  Metrics.TestServiceGrpc.TestServiceBlockingStub blockingStub;
+  Metrics.TestServiceGrpc.TestServiceStub asyncStub;
 
   private void parseArgs(String[] args) {
     boolean usage = false;
@@ -138,8 +138,8 @@ public final class Http2Client {
 
   private void setUp() {
     channel = createChannel();
-    blockingStub = TestServiceGrpc.newBlockingStub(channel);
-    asyncStub = TestServiceGrpc.newStub(channel);
+    blockingStub = Metrics.TestServiceGrpc.newBlockingStub(channel);
+    asyncStub = Metrics.TestServiceGrpc.newStub(channel);
   }
 
   private void shutdown() {
@@ -325,8 +325,8 @@ public final class Http2Client {
       public void run() {
         Thread.currentThread().setName("thread:" + threadNum);
         try {
-          TestServiceGrpc.TestServiceBlockingStub blockingStub =
-              TestServiceGrpc.newBlockingStub(channel);
+          Metrics.TestServiceGrpc.TestServiceBlockingStub blockingStub =
+              Metrics.TestServiceGrpc.newBlockingStub(channel);
           assertResponseEquals(blockingStub.unaryCall(simpleRequest), goldenResponse);
         } catch (Exception e) {
           throw new RuntimeException(e);

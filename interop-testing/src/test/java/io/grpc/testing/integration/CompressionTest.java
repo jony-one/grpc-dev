@@ -50,7 +50,6 @@ import io.grpc.stub.StreamObserver;
 import io.grpc.testing.integration.Messages.Payload;
 import io.grpc.testing.integration.Messages.SimpleRequest;
 import io.grpc.testing.integration.Messages.SimpleResponse;
-import io.grpc.testing.integration.TestServiceGrpc.TestServiceBlockingStub;
 import io.grpc.testing.integration.TransportCompressionTest.Fzip;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -196,7 +195,7 @@ public class CompressionTest {
         .compressorRegistry(clientCompressors)
         .intercept(new ClientCompressorInterceptor())
         .build();
-    stub = TestServiceGrpc.newBlockingStub(channel);
+    stub = Metrics.TestServiceGrpc.newBlockingStub(channel);
 
     stub.unaryCall(REQUEST);
 
@@ -246,7 +245,7 @@ public class CompressionTest {
     }
   }
 
-  private static final class LocalServer extends TestServiceGrpc.TestServiceImplBase {
+  private static final class LocalServer extends Metrics.TestServiceGrpc.TestServiceImplBase {
     @Override
     public void unaryCall(SimpleRequest request, StreamObserver<SimpleResponse> responseObserver) {
       responseObserver.onNext(SimpleResponse.newBuilder()

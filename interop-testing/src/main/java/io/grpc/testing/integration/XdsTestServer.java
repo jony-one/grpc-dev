@@ -222,7 +222,7 @@ public final class XdsTestServer {
     }
   }
 
-  private static class TestServiceImpl extends TestServiceGrpc.TestServiceImplBase {
+  private static class TestServiceImpl extends Metrics.TestServiceGrpc.TestServiceImplBase {
     private final String serverId;
     private final String host;
 
@@ -251,7 +251,7 @@ public final class XdsTestServer {
   }
 
   private static class XdsUpdateHealthServiceImpl
-      extends XdsUpdateHealthServiceGrpc.XdsUpdateHealthServiceImplBase {
+      extends Metrics.XdsUpdateHealthServiceGrpc.XdsUpdateHealthServiceImplBase {
     private HealthStatusManager health;
 
     private XdsUpdateHealthServiceImpl(HealthStatusManager health) {

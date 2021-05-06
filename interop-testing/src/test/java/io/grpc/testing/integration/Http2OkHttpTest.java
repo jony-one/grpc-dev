@@ -145,8 +145,8 @@ public class Http2OkHttpTest extends AbstractInteropTest {
         .overrideAuthority(GrpcUtil.authorityFromHostAndPort(
             BAD_HOSTNAME, port))
         .build();
-    TestServiceGrpc.TestServiceBlockingStub blockingStub =
-        TestServiceGrpc.newBlockingStub(channel);
+    Metrics.TestServiceGrpc.TestServiceBlockingStub blockingStub =
+        Metrics.TestServiceGrpc.newBlockingStub(channel);
 
     Throwable actualThrown = null;
     try {
@@ -174,8 +174,8 @@ public class Http2OkHttpTest extends AbstractInteropTest {
           }
         })
         .build();
-    TestServiceGrpc.TestServiceBlockingStub blockingStub =
-        TestServiceGrpc.newBlockingStub(channel);
+    Metrics.TestServiceGrpc.TestServiceBlockingStub blockingStub =
+        Metrics.TestServiceGrpc.newBlockingStub(channel);
 
     blockingStub.emptyCall(Empty.getDefaultInstance());
 
@@ -195,8 +195,8 @@ public class Http2OkHttpTest extends AbstractInteropTest {
           }
         })
         .build();
-    TestServiceGrpc.TestServiceBlockingStub blockingStub =
-        TestServiceGrpc.newBlockingStub(channel);
+    Metrics.TestServiceGrpc.TestServiceBlockingStub blockingStub =
+        Metrics.TestServiceGrpc.newBlockingStub(channel);
 
     Throwable actualThrown = null;
     try {

@@ -29,7 +29,6 @@ import io.grpc.inprocess.InProcessServerBuilder;
 import io.grpc.stub.StreamObserver;
 import io.grpc.testing.integration.Messages.StreamingInputCallRequest;
 import io.grpc.testing.integration.Messages.StreamingInputCallResponse;
-import io.grpc.testing.integration.TestServiceGrpc.TestServiceImplBase;
 import io.grpc.util.MutableHandlerRegistry;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -127,7 +126,7 @@ public class MoreInProcessTest {
         };
 
     // make a gRPC call
-    TestServiceGrpc.newStub(inProcessChannel).streamingInputCall(responseObserver);
+    Metrics.TestServiceGrpc.newStub(inProcessChannel).streamingInputCall(responseObserver);
 
     assertTrue(finishLatch.await(900, TimeUnit.MILLISECONDS));
     assertEquals(fakeResponse, responseRef.get());
@@ -186,7 +185,7 @@ public class MoreInProcessTest {
         };
 
     // make a gRPC call
-    TestServiceGrpc.newStub(inProcessChannel).streamingInputCall(responseObserver);
+    Metrics.TestServiceGrpc.newStub(inProcessChannel).streamingInputCall(responseObserver);
 
     assertTrue(finishLatch.await(900, TimeUnit.MILLISECONDS));
     assertEquals(fakeError.getCode(), Status.fromThrowable(throwableRef.get()).getCode());
@@ -245,7 +244,7 @@ public class MoreInProcessTest {
         };
 
     // make a gRPC call
-    TestServiceGrpc.newStub(inProcessChannel).streamingInputCall(responseObserver)
+    Metrics.TestServiceGrpc.newStub(inProcessChannel).streamingInputCall(responseObserver)
         .onNext(StreamingInputCallRequest.getDefaultInstance());
 
     assertTrue(finishLatch.await(900, TimeUnit.MILLISECONDS));

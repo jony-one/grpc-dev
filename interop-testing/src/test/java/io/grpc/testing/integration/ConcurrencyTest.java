@@ -137,7 +137,7 @@ public class ConcurrencyTest {
 
   private Server server;
   private ManagedChannel clientChannel;
-  private TestServiceGrpc.TestServiceStub clientStub;
+  private Metrics.TestServiceGrpc.TestServiceStub clientStub;
   private ScheduledExecutorService serverExecutor;
   private ExecutorService clientExecutor;
 
@@ -150,7 +150,7 @@ public class ConcurrencyTest {
 
     // Create the client. Keep a reference to its channel so we can shut it down during tearDown().
     clientChannel = newClientChannel();
-    clientStub = TestServiceGrpc.newStub(clientChannel);
+    clientStub = Metrics.TestServiceGrpc.newStub(clientChannel);
   }
 
   @After

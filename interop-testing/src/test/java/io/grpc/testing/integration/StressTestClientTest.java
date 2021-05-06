@@ -133,7 +133,7 @@ public class StressTestClientTest {
           "localhost:" + client.getMetricServerPort(), InsecureChannelCredentials.create())
         .build();
 
-    MetricsServiceGrpc.MetricsServiceBlockingStub stub = MetricsServiceGrpc.newBlockingStub(ch);
+    Metrics.MetricsServiceGrpc.MetricsServiceBlockingStub stub = Metrics.MetricsServiceGrpc.newBlockingStub(ch);
 
     // Wait until gauges have been exported
     Set<String> gaugeNames = newHashSet("/stress_test/server_0/channel_0/stub_0/qps",

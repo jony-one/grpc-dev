@@ -61,8 +61,8 @@ public final class LongLivedChannel extends HttpServlet {
         .setPayload(Payload.newBuilder()
             .setBody(ByteString.copyFrom(new byte[requestSize])))
         .build();
-    TestServiceGrpc.TestServiceBlockingStub blockingStub =
-            TestServiceGrpc.newBlockingStub(channel);
+    Metrics.TestServiceGrpc.TestServiceBlockingStub blockingStub =
+            Metrics.TestServiceGrpc.newBlockingStub(channel);
     SimpleResponse simpleResponse = blockingStub.unaryCall(request);
     resp.setContentType("text/plain");
     if (simpleResponse.getPayload().getBody().size() == responseSize) {

@@ -306,7 +306,7 @@ public final class XdsTestClient {
         }
 
         ManagedChannel channel = channels.get((int) (requestId % channels.size()));
-        TestServiceGrpc.TestServiceStub stub = TestServiceGrpc.newStub(channel);
+        Metrics.TestServiceGrpc.TestServiceStub stub = Metrics.TestServiceGrpc.newStub(channel);
         final AtomicReference<ClientCall<?, ?>> clientCallRef = new AtomicReference<>();
         final AtomicReference<String> hostnameRef = new AtomicReference<>();
         stub =
@@ -443,7 +443,7 @@ public final class XdsTestClient {
   }
 
   private final class ConfigureUpdateServiceImpl extends
-      XdsUpdateClientConfigureServiceGrpc.XdsUpdateClientConfigureServiceImplBase {
+      Metrics.XdsUpdateClientConfigureServiceGrpc.XdsUpdateClientConfigureServiceImplBase {
     @Override
     public void configure(ClientConfigureRequest request,
         StreamObserver<ClientConfigureResponse> responseObserver) {
@@ -466,7 +466,7 @@ public final class XdsTestClient {
     }
   }
 
-  private class XdsStatsImpl extends LoadBalancerStatsServiceGrpc.LoadBalancerStatsServiceImplBase {
+  private class XdsStatsImpl extends Metrics.LoadBalancerStatsServiceGrpc.LoadBalancerStatsServiceImplBase {
     @Override
     public void getClientStats(
         LoadBalancerStatsRequest req, StreamObserver<LoadBalancerStatsResponse> responseObserver) {

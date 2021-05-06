@@ -39,8 +39,8 @@ public class ReconnectTestClient {
   private boolean useOkhttp = false;
   private ManagedChannel controlChannel;
   private ManagedChannel retryChannel;
-  private ReconnectServiceGrpc.ReconnectServiceBlockingStub controlStub;
-  private ReconnectServiceGrpc.ReconnectServiceBlockingStub retryStub;
+  private Metrics.ReconnectServiceGrpc.ReconnectServiceBlockingStub controlStub;
+  private Metrics.ReconnectServiceGrpc.ReconnectServiceBlockingStub retryStub;
 
   private void parseArgs(String[] args) {
     for (String arg : args) {
@@ -68,7 +68,7 @@ public class ReconnectTestClient {
     try {
       controlChannel = NettyChannelBuilder.forAddress("127.0.0.1", serverControlPort)
           .negotiationType(NegotiationType.PLAINTEXT).build();
-      controlStub = ReconnectServiceGrpc.newBlockingStub(controlChannel);
+      controlStub = Metrics.ReconnectServiceGrpc.newBlockingStub(controlChannel);
       if (useOkhttp) {
         retryChannel =
             OkHttpChannelBuilder.forAddress("127.0.0.1", serverRetryPort)
@@ -78,7 +78,7 @@ public class ReconnectTestClient {
         retryChannel = NettyChannelBuilder.forAddress("127.0.0.1", serverRetryPort)
             .negotiationType(NegotiationType.TLS).build();
       }
-      retryStub = ReconnectServiceGrpc.newBlockingStub(retryChannel);
+      retryStub = Metrics.ReconnectServiceGrpc.newBlockingStub(retryChannel);
       controlStub.start(Empty.getDefaultInstance());
 
       long startTimeStamp = System.currentTimeMillis();

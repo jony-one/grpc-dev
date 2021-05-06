@@ -65,14 +65,14 @@ import org.mockito.MockitoAnnotations;
 public class CascadingTest {
 
   @Mock
-  TestServiceGrpc.TestServiceImplBase service;
+  Metrics.TestServiceGrpc.TestServiceImplBase service;
   private ManagedChannel channel;
   private Server server;
   private CountDownLatch observedCancellations;
   private CountDownLatch receivedCancellations;
-  private TestServiceGrpc.TestServiceBlockingStub blockingStub;
-  private TestServiceGrpc.TestServiceStub asyncStub;
-  private TestServiceGrpc.TestServiceFutureStub futureStub;
+  private Metrics.TestServiceGrpc.TestServiceBlockingStub blockingStub;
+  private Metrics.TestServiceGrpc.TestServiceStub asyncStub;
+  private Metrics.TestServiceGrpc.TestServiceFutureStub futureStub;
   private ExecutorService otherWork;
 
   @Before
@@ -81,9 +81,9 @@ public class CascadingTest {
     // Use a cached thread pool as we need a thread for each blocked call
     otherWork = Executors.newCachedThreadPool();
     channel = InProcessChannelBuilder.forName("channel").executor(otherWork).build();
-    blockingStub = TestServiceGrpc.newBlockingStub(channel);
-    asyncStub = TestServiceGrpc.newStub(channel);
-    futureStub = TestServiceGrpc.newFutureStub(channel);
+    blockingStub = Metrics.TestServiceGrpc.newBlockingStub(channel);
+    asyncStub = Metrics.TestServiceGrpc.newStub(channel);
+    futureStub = Metrics.TestServiceGrpc.newFutureStub(channel);
   }
 
   @After
@@ -185,7 +185,7 @@ public class CascadingTest {
   public void testDeadlinePropagation() throws Exception {
     final AtomicInteger recursionDepthRemaining = new AtomicInteger(3);
     final SettableFuture<Deadline> finalDeadline = SettableFuture.create();
-    class DeadlineSaver extends TestServiceGrpc.TestServiceImplBase {
+    class DeadlineSaver extends Metrics.TestServiceGrpc.TestServiceImplBase {
       @Override
       public void unaryCall(final SimpleRequest request,
           final StreamObserver<SimpleResponse> responseObserver) {
@@ -228,7 +228,7 @@ public class CascadingTest {
   private Future<?> startChainingServer(final int depthThreshold) throws IOException {
     final AtomicInteger serversReady = new AtomicInteger();
     final SettableFuture<Void> chainReady = SettableFuture.create();
-    class ChainingService extends TestServiceGrpc.TestServiceImplBase {
+    class ChainingService extends Metrics.TestServiceGrpc.TestServiceImplBase {
       @Override
       public void unaryCall(final SimpleRequest request,
           final StreamObserver<SimpleResponse> responseObserver) {

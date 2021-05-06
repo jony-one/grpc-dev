@@ -33,7 +33,7 @@ import io.grpc.MethodDescriptor;
 import io.grpc.internal.NoopClientCall;
 import io.grpc.testing.integration.Messages.SimpleRequest;
 import io.grpc.testing.integration.Messages.SimpleResponse;
-import io.grpc.testing.integration.TestServiceGrpc;
+import io.grpc.testing.integration.Metrics;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,10 +71,10 @@ public class StubConfigTest {
   public void testConfigureDeadline() {
     Deadline deadline = Deadline.after(2, NANOSECONDS);
     // Create a default stub
-    TestServiceGrpc.TestServiceBlockingStub stub = TestServiceGrpc.newBlockingStub(channel);
+    Metrics.TestServiceGrpc.TestServiceBlockingStub stub = Metrics.TestServiceGrpc.newBlockingStub(channel);
     assertNull(stub.getCallOptions().getDeadline());
     // Reconfigure it
-    TestServiceGrpc.TestServiceBlockingStub reconfiguredStub = stub.withDeadline(deadline);
+    Metrics.TestServiceGrpc.TestServiceBlockingStub reconfiguredStub = stub.withDeadline(deadline);
     // New altered config
     assertEquals(deadline, reconfiguredStub.getCallOptions().getDeadline());
     // Default config unchanged
@@ -83,15 +83,15 @@ public class StubConfigTest {
 
   @Test
   public void testStubCallOptionsPopulatedToNewCall() {
-    TestServiceGrpc.TestServiceStub stub = TestServiceGrpc.newStub(channel);
+    Metrics.TestServiceGrpc.TestServiceStub stub = Metrics.TestServiceGrpc.newStub(channel);
     CallOptions options1 = stub.getCallOptions();
     SimpleRequest request = SimpleRequest.getDefaultInstance();
     stub.unaryCall(request, responseObserver);
-    verify(channel).newCall(same(TestServiceGrpc.getUnaryCallMethod()), same(options1));
+    verify(channel).newCall(same(Metrics.TestServiceGrpc.getUnaryCallMethod()), same(options1));
     stub = stub.withDeadlineAfter(2, NANOSECONDS);
     CallOptions options2 = stub.getCallOptions();
     assertNotSame(options1, options2);
     stub.unaryCall(request, responseObserver);
-    verify(channel).newCall(same(TestServiceGrpc.getUnaryCallMethod()), same(options2));
+    verify(channel).newCall(same(Metrics.TestServiceGrpc.getUnaryCallMethod()), same(options2));
   }
 }

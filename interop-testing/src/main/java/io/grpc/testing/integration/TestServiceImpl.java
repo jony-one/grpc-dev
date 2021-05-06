@@ -52,7 +52,7 @@ import javax.annotation.concurrent.GuardedBy;
  * Implementation of the business logic for the TestService. Uses an executor to schedule chunks
  * sent in response streams.
  */
-public class TestServiceImpl extends TestServiceGrpc.TestServiceImplBase {
+public class TestServiceImpl extends Metrics.TestServiceGrpc.TestServiceImplBase {
   private final Random random = new Random();
 
   private final ScheduledExecutorService executor;

@@ -71,7 +71,7 @@ public final class GrpclbLongLivedAffinityTestClient {
   private long totalTestSeconds = 60;
 
   ManagedChannel channel;
-  TestServiceGrpc.TestServiceBlockingStub blockingStub;
+  Metrics.TestServiceGrpc.TestServiceBlockingStub blockingStub;
 
   private void parseArgs(String[] args) {
     boolean usage = false;
@@ -130,7 +130,7 @@ public final class GrpclbLongLivedAffinityTestClient {
 
   private void setUp() {
     channel = createChannel();
-    blockingStub = TestServiceGrpc.newBlockingStub(channel);
+    blockingStub = Metrics.TestServiceGrpc.newBlockingStub(channel);
   }
 
   private void shutdown() {

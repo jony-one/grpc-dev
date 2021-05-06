@@ -44,7 +44,7 @@ import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Application that starts a client for the {@link TestServiceGrpc.TestServiceImplBase} and runs
+ * Application that starts a client for the {@link Metrics.TestServiceGrpc.TestServiceImplBase} and runs
  * through a series of tests.
  */
 public class TestServiceClient {
@@ -276,8 +276,8 @@ public class TestServiceClient {
         ManagedChannel channel = Grpc.newChannelBuilderForAddress(
             serverHost, serverPort, ComputeEngineChannelCredentials.create()).build();
         try {
-          TestServiceGrpc.TestServiceBlockingStub computeEngineStub =
-              TestServiceGrpc.newBlockingStub(channel);
+          Metrics.TestServiceGrpc.TestServiceBlockingStub computeEngineStub =
+              Metrics.TestServiceGrpc.newBlockingStub(channel);
           tester.computeEngineChannelCredentials(defaultServiceAccount, computeEngineStub);
         } finally {
           channel.shutdownNow();
@@ -317,8 +317,8 @@ public class TestServiceClient {
         ManagedChannel channel = Grpc.newChannelBuilderForAddress(
             serverHost, serverPort, GoogleDefaultChannelCredentials.create()).build();
         try {
-          TestServiceGrpc.TestServiceBlockingStub googleDefaultStub =
-              TestServiceGrpc.newBlockingStub(channel);
+          Metrics.TestServiceGrpc.TestServiceBlockingStub googleDefaultStub =
+              Metrics.TestServiceGrpc.newBlockingStub(channel);
           tester.googleDefaultCredentials(defaultServiceAccount, googleDefaultStub);
         } finally {
           channel.shutdownNow();

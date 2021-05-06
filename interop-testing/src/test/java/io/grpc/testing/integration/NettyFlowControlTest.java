@@ -144,7 +144,7 @@ public class NettyFlowControlTest {
     int streamSize = 1 * 1024 * 1024;
     long expectedWindow = latency * (bandwidth / TimeUnit.SECONDS.toMillis(1));
 
-    TestServiceGrpc.TestServiceStub stub = TestServiceGrpc.newStub(channel);
+    Metrics.TestServiceGrpc.TestServiceStub stub = Metrics.TestServiceGrpc.newStub(channel);
     StreamingOutputCallRequest.Builder builder = StreamingOutputCallRequest.newBuilder()
         .addResponseParameters(ResponseParameters.newBuilder().setSize(streamSize / 16))
         .addResponseParameters(ResponseParameters.newBuilder().setSize(streamSize / 16))
