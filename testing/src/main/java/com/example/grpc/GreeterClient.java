@@ -33,7 +33,7 @@ public class GreeterClient {
 
     public static void block(){
         // 创建 ManagedChannelImpl
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("127.0.0.1",8080).usePlaintext().build();
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("127.0.0.1",15001).usePlaintext().build();
         // 创建客户端 Stub
         HelloServiceGrpc.HelloServiceBlockingStub stub  = HelloServiceGrpc.newBlockingStub(channel);
         HelloRequest request = HelloRequest.newBuilder().setName("fadsfasfsafsafsafdsf").build();
