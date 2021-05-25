@@ -616,6 +616,7 @@ public final class NettyChannelBuilder extends
 
   /**
    * Creates Netty transports. Exposed for internal use, as it should be private.
+   * 创建Netty运输工具。暴露出来供内部使用，因为它应该是私有的。
    */
   @CheckReturnValue
   private static final class NettyTransportFactory implements ClientTransportFactory {

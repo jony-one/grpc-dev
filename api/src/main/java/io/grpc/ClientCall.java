@@ -21,33 +21,45 @@ import javax.annotation.Nullable;
 /**
  * An instance of a call to a remote method. A call will send zero or more
  * request messages to the server and receive zero or more response messages back.
- *
+ * 调用远程方法的实例。 呼叫将向服务器发送零个或多个请求消息，并向回接收零个或多个响应消息。
+ * 实例由通道创建，存根使用它们来调用其远程行为。
  * <p>Instances are created
  * by a {@link Channel} and used by stubs to invoke their remote behavior.
+ * 实例由通道创建，使用 stubs 来调用其远程行为。
  *
  * <p>More advanced usages may consume this interface directly as opposed to using a stub. Common
  * reasons for doing so would be the need to interact with flow-control or when acting as a generic
  * proxy for arbitrary operations.
  *
+ * 与使用 stub 相反，更高级的用法可能会直接消耗此接口。 这样做的常见原因是需要与流控制进行交互，或者充当任意操作的通用代理。
+ *
  * <p>{@link #start} must be called prior to calling any other methods, with the exception of
  * {@link #cancel}. Whereas {@link #cancel} must not be followed by any other methods,
  * but can be called more than once, while only the first one has effect.
+ * 在调用任何其他方法之前，必须先调用start（io.grpc.ClientCall.Listener <RespT>，io.grpc.Metadata），但cancel（java.lang.String，java.lang.Throwable）除外。
+ * 而cancel（java.lang.String，java.lang.Throwable）不得跟随任何其他方法，但是可以多次调用，而只有第一个方法才有效。
  *
  * <p>No generic method for determining message receipt or providing acknowledgement is provided.
  * Applications are expected to utilize normal payload messages for such signals, as a response
  * naturally acknowledges its request.
  *
+ * 没有提供确定消息接收或提供确认的通用方法。 期望应用程序将正常的有效负载消息用于此类信号，因为响应自然会确认其请求。
+ *
  * <p>Methods are guaranteed to be non-blocking. Not thread-safe except for {@link #request}, which
  * may be called from any thread.
+ * 方法保证是非阻塞的。 除了request（int）以外，它不是线程安全的，request（int）可以从任何线程调用。
  *
  * <p>There is no interaction between the states on the {@link Listener Listener} and {@link
  * ClientCall}, i.e., if {@link Listener#onClose Listener.onClose()} is called, it has no bearing on
  * the permitted operations on {@code ClientCall} (but it may impact whether they do anything).
+ * interaction 和ClientCall上的状态之间没有交互，即，如果调用Listener.onClose（），则不会影响ClientCall上的允许操作（但可能会影响它们是否执行任何操作）。
  *
  * <p>There is a race between {@link #cancel} and the completion/failure of the RPC in other ways.
  * If {@link #cancel} won the race, {@link Listener#onClose Listener.onClose()} is called with
  * {@link Status#CANCELLED CANCELLED}. Otherwise, {@link Listener#onClose Listener.onClose()} is
  * called with whatever status the RPC was finished. We ensure that at most one is called.
+ * 在cancel（java.lang.String，java.lang.Throwable）与RPC以其他方式完成/失败之间存在竞争。 如果cancel（java.lang.String，java.lang.Throwable）赢得竞争，
+ * 则使用CANCELLED调用Listener.onClose（）。 否则，将以RPC完成的任何状态调用Listener.onClose（）。 我们确保最多调用一个。
  *
  * <h3>Usage examples</h3>
  * <h4>Simple Unary (1 request, 1 response) RPC</h4>
@@ -66,6 +78,8 @@ import javax.annotation.Nullable;
  * requests produced by a fictional <code>makeNextRequest()</code> in a flow-control-compliant
  * manner, and notifies gRPC library to receive additional response after one is consumed by
  * a fictional <code>processResponse()</code>.
+ * 以下代码段演示了双向流传输的情况，其中客户端以符合流控制的方式发送虚构的makeNextRequest（）产生的请求，
+ * 并在虚构的processResponse（）消耗了一个请求后通知gRPC库接收其他响应。 。
  *
  * <p><pre>
  *   call = channel.newCall(bidiStreamingMethod, callOptions);
@@ -91,13 +105,14 @@ import javax.annotation.Nullable;
  *   }
  *   call.start(listener, headers);
  *   // Notify gRPC to receive one response. Without this line, onMessage() would never be called.
+ *   // 通知gRPC接收一个响应。 没有这一行，onMessage（）将永远不会被调用。
  *   call.request(1);
  * </pre>
  *
  * <p>DO NOT MOCK: Use InProcessServerBuilder and make a test server instead.
  *
- * @param <ReqT> type of message sent one or more times to the server.
- * @param <RespT> type of message received one or more times from the server.
+ * @param <ReqT> type of message sent one or more times to the server. 一次或多次发送到服务器的消息类型。
+ * @param <RespT> type of message received one or more times from the server. 一次或多次接收来自服务器的消息类型。
  */
 public abstract class ClientCall<ReqT, RespT> {
   /**
@@ -171,15 +186,18 @@ public abstract class ClientCall<ReqT, RespT> {
 
   /**
    * Start a call, using {@code responseListener} for processing response messages.
+   * 使用{@code responseListener}处理响应消息来发起呼叫。
    *
    * <p>It must be called prior to any other method on this class, except for {@link #cancel} which
    * may be called at any time.
+   * 必须在此类上的任何其他方法之前调用它，但{@link #cancel}可以随时调用。
    *
    * <p>Since {@link Metadata} is not thread-safe, the caller must not access (read or write) {@code
    * headers} after this point.
    *
-   * @param responseListener receives response messages
-   * @param headers which can contain extra call metadata, e.g. authentication credentials.
+   *
+   * @param responseListener receives response messages  接收响应消息
+   * @param headers which can contain extra call metadata, e.g. authentication credentials.    扩展的 Header
    * @throws IllegalStateException if a method (including {@code start()}) on this class has been
    *                               called.
    */
@@ -201,6 +219,12 @@ public abstract class ClientCall<ReqT, RespT> {
    * calls.
    *
    * <p>This method is safe to call from multiple threads without external synchronization.
+   *
+   * 从调用发送到ClientCall.Listener.onMessage(Object)的消息的给定数量的请求。不会传递任何其他消息。
+   * 消息传递保证按照接收的顺序是连续的。此外，侦听器方法不会被并发访问。虽然不能保证始终使用同一个线程，但可以保证每次只有一个线程访问侦听器。
+   * 如果希望绕过入站流控制，可以指定大量消息(例如Integer.MAX_VALUE)。
+   * 如果调用多次，能够传递的消息数将是调用的总和。
+   * 在不需要外部同步的情况下，从多个线程调用此方法是安全的。
    *
    * @param numMessages the requested number of messages to be delivered to the listener. Must be
    *                    non-negative.
@@ -237,6 +261,7 @@ public abstract class ClientCall<ReqT, RespT> {
   /**
    * Send a request message to the server. May be called zero or more times depending on how many
    * messages the server is willing to accept for the operation.
+   * 向服务器发送一个请求信息。可能被调用零次或多次，取决于服务器愿意接受多少条操作信息。
    *
    * @param message message to be sent to the server.
    * @throws IllegalStateException if call is {@link #halfClose}d or explicitly {@link #cancel}ed

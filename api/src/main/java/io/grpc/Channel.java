@@ -37,6 +37,7 @@ public abstract class Channel {
    * {@link MethodDescriptor}. The returned {@link ClientCall} does not trigger any remote
    * behavior until {@link ClientCall#start(ClientCall.Listener, Metadata)} is
    * invoked.
+   * 根据指定的 MethodDescriptor 创建一个 ClientCall 用于远程操作，返回 ClientCall 没有被调用前不触发任何远程
    *
    * @param methodDescriptor describes the name and parameter types of the operation to call.
    * @param callOptions runtime options to be applied to this call.

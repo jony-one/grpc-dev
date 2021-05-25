@@ -30,6 +30,8 @@ import java.util.List;
  * <p>Implementations <em>should not</em> throw. If they do, it may interrupt class loading. If
  * exceptions may reasonably occur for implementation-specific reasons, implementations should
  * generally handle the exception gracefully and return {@code false} from {@link #isAvailable()}.
+ *
+ * 在创建客户端的时候就发起了寻址
  */
 @ExperimentalApi("https://github.com/grpc/grpc-java/issues/4159")
 public abstract class NameResolverProvider extends NameResolver.Factory {

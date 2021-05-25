@@ -181,6 +181,11 @@ final class ClientCallImpl<ReqT, RespT> extends ClientCall<ReqT, RespT> {
     }
   }
 
+  /**
+   * 发起调用
+   * @param observer
+   * @param headers which can contain extra call metadata, e.g. authentication credentials.
+   */
   @Override
   public void start(Listener<RespT> observer, Metadata headers) {
     PerfMark.startTask("ClientCall.start", tag);

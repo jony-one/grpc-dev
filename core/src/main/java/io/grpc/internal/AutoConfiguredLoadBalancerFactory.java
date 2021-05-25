@@ -105,13 +105,16 @@ public final class AutoConfiguredLoadBalancerFactory {
      * LoadBalancer#canHandleEmptyAddressListFromNameResolution()} returns {@code false}). {@code
      * AutoConfiguredLoadBalancer} doesn't expose {@code
      * canHandleEmptyAddressListFromNameResolution} because it depends on the delegated LB.
+     *
+     * 如果resolvedAddresses为空并且lb需要地址({@link LoadBalancer#canHandleEmptyAddressListFromNameResolution()}返回{@code false})，
+     * 则返回非ok状态。{@code canHandleEmptyAddressListFromNameResolution}不会暴露{@code canHandleEmptyAddressListFromNameResolution}，因为它依赖于委托的LB。
      */
     Status tryHandleResolvedAddresses(ResolvedAddresses resolvedAddresses) {
       List<EquivalentAddressGroup> servers = resolvedAddresses.getAddresses();
       Attributes attributes = resolvedAddresses.getAttributes();
       PolicySelection policySelection =
           (PolicySelection) resolvedAddresses.getLoadBalancingPolicyConfig();
-
+//      使用代理策略
       if (policySelection == null) {
         LoadBalancerProvider defaultProvider;
         try {

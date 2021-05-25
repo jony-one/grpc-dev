@@ -154,7 +154,7 @@ public class DnsNameResolver extends NameResolver {
   // from any thread.
   private NameResolver.Listener2 listener;
 
-  protected DnsNameResolver(
+  public DnsNameResolver(
       @Nullable String nsAuthority,
       String name,
       Args args,
@@ -293,6 +293,7 @@ public class DnsNameResolver extends NameResolver {
     return result;
   }
 
+  // 做寻址解析
   private final class Resolve implements Runnable {
     private final Listener2 savedListener;
 

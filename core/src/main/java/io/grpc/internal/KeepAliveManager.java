@@ -156,6 +156,7 @@ public class KeepAliveManager {
 
   /**
    * Transport has received some data so that we can delay sending keepalives.
+   * 传输已收到一些数据，因此我们可以延迟发送Keepalive。
    */
   public synchronized void onDataReceived() {
     stopwatch.reset().start();

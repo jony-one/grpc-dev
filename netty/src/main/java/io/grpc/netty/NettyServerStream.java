@@ -165,6 +165,7 @@ class NettyServerStream extends AbstractServerStream {
   }
 
   /** This should only called from the transport thread. */
+  /**这只能从传输线程中调用. */
   public static class TransportState extends AbstractServerStream.TransportState
       implements StreamIdHolder {
     private final Http2Stream http2Stream;

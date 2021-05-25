@@ -1,9 +1,7 @@
 package com.example.grpc;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import io.grpc.MethodDescriptor;
+import io.grpc.*;
 import io.grpc.stub.ClientCallStreamObserver;
 import io.grpc.stub.ClientResponseObserver;
 import io.grpc.stub.StreamObserver;
@@ -33,7 +31,11 @@ public class GreeterClient {
 
     public static void block(){
         // 创建 ManagedChannelImpl
-        ManagedChannel channel = ManagedChannelBuilder.forAddress("127.0.0.1",15001).usePlaintext().build();
+        ManagedChannel channel = ManagedChannelBuilder
+                .forAddress("my.domain.com",15001)
+                .usePlaintext()
+                .build();
+        NameResolverRegistry.getDefaultRegistry();
         // 创建客户端 Stub
         HelloServiceGrpc.HelloServiceBlockingStub stub  = HelloServiceGrpc.newBlockingStub(channel);
         HelloRequest request = HelloRequest.newBuilder().setName("fadsfasfsafsafsafdsf").build();

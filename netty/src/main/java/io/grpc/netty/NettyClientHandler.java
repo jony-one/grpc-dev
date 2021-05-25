@@ -370,6 +370,7 @@ class NettyClientHandler extends AbstractNettyHandler {
 
   private void onHeadersRead(int streamId, Http2Headers headers, boolean endStream) {
     // Stream 1 is reserved for the Upgrade response, so we should ignore its headers here:
+    // 流1是为升级响应保留的，因此我们应在此处忽略其标头：
     if (streamId != Http2CodecUtil.HTTP_UPGRADE_STREAM_ID) {
       NettyClientStream.TransportState stream = clientStream(requireHttp2Stream(streamId));
       PerfMark.event("NettyClientHandler.onHeadersRead", stream.tag());

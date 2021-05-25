@@ -448,6 +448,7 @@ class NettyServerHandler extends AbstractNettyHandler {
 
       // The Http2Stream object was put by AbstractHttp2ConnectionHandler before calling this
       // method.
+      // 根据 客户端的 streamId 获取 Http2Stream ，默认情况下每次 stream 都有已给 streamId 在首次传送的时候传送过来
       Http2Stream http2Stream = requireHttp2Stream(streamId);
       // HTTP Header 转换为内部 Metadata 对象
       System.out.println(this.getClass() + "。3.将 Header 转为 Metadata 对象");
@@ -456,6 +457,7 @@ class NettyServerHandler extends AbstractNettyHandler {
       StatsTraceContext statsTraceCtx =
           StatsTraceContext.newServerContext(streamTracerFactories, method, metadata);
 
+      // 监控 stream 状态
       NettyServerStream.TransportState state = new NettyServerStream.TransportState(
           this,
           ctx.channel().eventLoop(),
@@ -464,6 +466,7 @@ class NettyServerHandler extends AbstractNettyHandler {
           statsTraceCtx,
           transportTracer,
           method);
+
 
       PerfMark.startTask("NettyServerHandler.onHeadersRead", state.tag());
       try {
@@ -826,9 +829,18 @@ class NettyServerHandler extends AbstractNettyHandler {
         streamId, Http2Error.INTERNAL_ERROR, cause, Strings.nullToEmpty(cause.getMessage()));
   }
 
+  /**
+   * 注册  Http2FrameListener
+   */
   private class FrameListener extends Http2FrameAdapter {
     private boolean firstSettings = true;
 
+    /**
+     * 读取 setting 存储到 attribute
+     * 只有首次可以设置
+     * @param ctx
+     * @param settings
+     */
     @Override
     public void onSettingsRead(ChannelHandlerContext ctx, Http2Settings settings) {
       if (firstSettings) {
@@ -839,6 +851,16 @@ class NettyServerHandler extends AbstractNettyHandler {
       }
     }
 
+    /**
+     * 读取 Data 数据
+     * @param ctx
+     * @param streamId
+     * @param data
+     * @param padding
+     * @param endOfStream
+     * @return
+     * @throws Http2Exception
+     */
     @Override
     public int onDataRead(ChannelHandlerContext ctx, int streamId, ByteBuf data, int padding,
         boolean endOfStream) throws Http2Exception {
@@ -849,6 +871,18 @@ class NettyServerHandler extends AbstractNettyHandler {
       return padding;
     }
 
+    /**
+     * 读取 Headers 数据
+     * @param ctx
+     * @param streamId
+     * @param headers
+     * @param streamDependency
+     * @param weight
+     * @param exclusive
+     * @param padding
+     * @param endStream
+     * @throws Http2Exception
+     */
     @Override
     public void onHeadersRead(ChannelHandlerContext ctx,
         int streamId,

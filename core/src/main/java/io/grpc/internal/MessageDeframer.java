@@ -167,11 +167,14 @@ public class MessageDeframer implements Closeable, Deframer {
     checkNotNull(data, "data");
     boolean needToCloseData = true;
     try {
+      //  判断是否已经处理过或者超时
       if (!isClosedOrScheduledToClose()) {
+        // 判断是否需要全局反序列化
         if (fullStreamDecompressor != null) {
           fullStreamDecompressor.addGzippedBytes(data);
         } else {
           System.out.println(getClass() + "\t5.将待解码的 Buffer 加入到 待处理的 CompositeReadableBuffer 中");
+          // 追加二进制数据
           unprocessed.addBuffer(data);
         }
         needToCloseData = false;
@@ -241,6 +244,7 @@ public class MessageDeframer implements Closeable, Deframer {
 
   /**
    * Indicates whether or not this deframer has been closed.
+   * 反序列化工具是否为空
    */
   public boolean isClosed() {
     return unprocessed == null && fullStreamDecompressor == null;
@@ -267,6 +271,7 @@ public class MessageDeframer implements Closeable, Deframer {
    * 根据请求消息头中的方法名到注册中心查询到对应的服务定义信息；
    *
    * 通过 Java 本地接口调用方式，调用服务端启动时注册的 IDL 接口实现类。
+   * 进入此方法的时候说明消息已经 endStream=true了 可以放心读取，而不是按需读取
    */
   private void deliver() {
     // We can have reentrancy here when using a direct executor, triggered by calls to

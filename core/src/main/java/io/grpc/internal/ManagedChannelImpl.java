@@ -202,6 +202,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
    * We delegate to this channel, so that we can have interceptors as necessary. If there aren't
    * any interceptors and the {@link io.grpc.BinaryLog} is {@code null} then this will just be a
    * {@link RealChannel}.
+   * 我们委托给这个通道，这样我们就可以有必要的拦截器。如果没有任何拦截器和{@link io.grpc。BinaryLog}是{@code null}那么这将只是一个 {@link RealChannel}.
    */
   private final Channel interceptorChannel;
   @Nullable private final String userAgent;
@@ -379,8 +380,10 @@ final class ManagedChannelImpl extends ManagedChannel implements
 
   /**
    * Make the channel exit idle mode, if it's in it.
-   *
+   * 使通道退出空闲模式，如果它处于这种模式。
    * <p>Must be called from syncContext
+   *  必须从syncContext调用
+   *  做负载均衡寻址发现
    */
   @VisibleForTesting
   void exitIdleMode() {
@@ -397,6 +400,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
       // isInUse() == false, in which case we still need to schedule the timer.
       rescheduleIdleTimer();
     }
+    // 如果不等于 null  说明已经有负载均衡器了，只需要刷新就可以了
     if (lbHelper != null) {
       return;
     }
@@ -406,7 +410,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
     // Delay setting lbHelper until fully initialized, since loadBalancerFactory is user code and
     // may throw. We don't want to confuse our state, even if we will enter panic mode.
     this.lbHelper = lbHelper;
-
+    // 做寻址解析，并将寻址结果直接传送到 Managel，多处引用
     NameResolverListener listener = new NameResolverListener(lbHelper, nameResolver);
     nameResolver.start(listener);
     nameResolverStarted = true;
@@ -604,6 +608,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
     this.executorPool = checkNotNull(builder.executorPool, "executorPool");
     this.executor = checkNotNull(executorPool.getObject(), "executor");
     this.originalChannelCreds = builder.channelCredentials;
+    // 提供 NettyClientFactory
     this.originalTransportFactory = clientTransportFactory;
     this.transportFactory = new CallCredentialsApplyingTransportFactory(
         clientTransportFactory, builder.callCredentials, this.executor);
@@ -903,6 +908,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
 
   /*
    * Creates a new outgoing call on the channel.
+   * 在通道上创建一个新的传出调用。
    */
   @Override
   public <ReqT, RespT> ClientCall<ReqT, RespT> newCall(MethodDescriptor<ReqT, RespT> method,
@@ -940,13 +946,13 @@ final class ManagedChannelImpl extends ManagedChannel implements
             method,
             getCallExecutor(callOptions),
             callOptions,
-            transportProvider,
+            transportProvider,   // 重点
             terminated ? null : transportFactory.getScheduledExecutorService(),
             channelCallTracer,
             null)
-            .setFullStreamDecompression(fullStreamDecompression)
-            .setDecompressorRegistry(decompressorRegistry)
-            .setCompressorRegistry(compressorRegistry);
+            .setFullStreamDecompression(fullStreamDecompression) // stream 解压
+            .setDecompressorRegistry(decompressorRegistry) // 反序列化工具
+            .setCompressorRegistry(compressorRegistry); // 序列化工具
       }
 
       @Override
@@ -965,6 +971,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
       if (configSelector.get() != INITIAL_PENDING_SELECTOR) {
         return newClientCall(method, callOptions);
       }
+      // 同步执行
       syncContext.execute(new Runnable() {
         @Override
         public void run() {
@@ -1127,6 +1134,14 @@ final class ManagedChannelImpl extends ManagedChannel implements
       }
     }
 
+    /**
+     * 创建 新的 ClientCall
+     * @param method
+     * @param callOptions
+     * @param <ReqT>
+     * @param <RespT>
+     * @return
+     */
     private <ReqT, RespT> ClientCall<ReqT, RespT> newClientCall(
         MethodDescriptor<ReqT, RespT> method, CallOptions callOptions) {
       InternalConfigSelector selector = configSelector.get();
@@ -1673,6 +1688,9 @@ final class ManagedChannelImpl extends ManagedChannel implements
     }
   }
 
+  /**
+   *  名字解析
+   */
   private final class NameResolverListener extends NameResolver.Listener2 {
     final LbHelperImpl helper;
     final NameResolver resolver;
@@ -1689,7 +1707,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
         @SuppressWarnings("ReferenceEquality")
         @Override
         public void run() {
-
+          // 获取地址
           List<EquivalentAddressGroup> servers = resolutionResult.getAddresses();
           channelLogger.log(
               ChannelLogLevel.DEBUG,
@@ -1703,6 +1721,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
           }
 
           nameResolverBackoffPolicy = null;
+          // 获取解析的服务配置
           ConfigOrError configOrError = resolutionResult.getServiceConfig();
           InternalConfigSelector resolvedConfigSelector =
               resolutionResult.getAttributes().get(InternalConfigSelector.KEY);
@@ -1726,6 +1745,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
                   ChannelLogLevel.INFO,
                   "Config selector from name resolver discarded by channel settings");
             }
+            // 更新配置
             realChannel.updateConfigSelector(effectiveServiceConfig.getDefaultConfigSelector());
           } else {
             // Try to use config if returned from name resolver
@@ -1797,7 +1817,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
                   .set(LoadBalancer.ATTR_HEALTH_CHECKING_CONFIG, healthCheckingConfig)
                   .build();
             }
-
+          // 寻址解析策略
             Status handleResult = helper.lb.tryHandleResolvedAddresses(
                 ResolvedAddresses.newBuilder()
                     .setAddresses(servers)
@@ -1811,7 +1831,7 @@ final class ManagedChannelImpl extends ManagedChannel implements
           }
         }
       }
-
+      // 做寻址解析
       syncContext.execute(new NamesResolved());
     }
 

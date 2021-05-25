@@ -244,6 +244,7 @@ class NettyClientTransport implements ConnectionClientTransport {
     Bootstrap b = new Bootstrap();
     b.option(ALLOCATOR, Utils.getByteBufAllocator(false));
     b.attr(LOGGER_KEY, channelLogger);
+    // 使用单个现场，因为连接可以复用，一个线程可以处理多 HTTP stream 所以根本没有必要使用线程池或者线程组
     b.group(eventLoop);
     b.channelFactory(channelFactory);
     // For non-socket based channel, the option will be ignored.
@@ -268,6 +269,11 @@ class NettyClientTransport implements ConnectionClientTransport {
      * We don't use a ChannelInitializer in the client bootstrap because its "initChannel" method
      * is executed in the event loop and we need this handler to be in the pipeline immediately so
      * that it may begin buffering writes.
+     *
+     * 我们不在客户端引导程序中使用ChannelInitializer，因为其“ initChannel”方法是在事件循环中执行的，
+     * 我们需要将此处理程序立即放入管道中，以便它可以开始缓冲写操作。放到 pipeline 中，可以立即接收发送任务
+     *
+     * 将 NettyClientHandler 注入到 Handler
      */
     b.handler(bufferingHandler);
     ChannelFuture regFuture = b.register();
@@ -294,6 +300,7 @@ class NettyClientTransport implements ConnectionClientTransport {
     }
     channel = regFuture.channel();
     // Start the write queue as soon as the channel is constructed
+    // Channel 建立完成后，立即开始写队列
     handler.startWriteQueue(channel);
     // This write will have no effect, yet it will only complete once the negotiationHandler
     // flushes any pending writes. We need it to be staged *before* the `connect` so that

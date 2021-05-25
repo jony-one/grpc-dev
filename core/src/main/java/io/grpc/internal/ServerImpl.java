@@ -479,6 +479,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
 
       if (headers.containsKey(MESSAGE_ENCODING_KEY)) {
         String encoding = headers.get(MESSAGE_ENCODING_KEY);
+        // 查找本地反序列号执行器
         Decompressor decompressor = decompressorRegistry.lookupDecompressor(encoding);
         if (decompressor == null) {
           stream.setListener(NOOP_LISTENER);
@@ -615,6 +616,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
 
       ServerCallHandler<ReqT, RespT> handler = methodDef.getServerCallHandler();
 
+      // 遍历所有拦截器，添加拦截器功能
       for (ServerInterceptor interceptor : interceptors) {
         handler = InternalServerInterceptors.interceptCallHandler(interceptor, handler);
       }
@@ -643,6 +645,7 @@ public final class ServerImpl extends io.grpc.Server implements InternalInstrume
           serverCallTracer,
           tag);
       // 主要步骤  UnaryServerCallHandler.startCall
+      // 拦截器执行
       ServerCall.Listener<WReqT> listener =
           methodDef.getServerCallHandler().startCall(call, headers);
       if (listener == null) {

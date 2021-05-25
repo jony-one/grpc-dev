@@ -101,12 +101,17 @@ abstract class AbstractNettyHandler extends GrpcHttp2ConnectionHandler {
 
   /**
    * Sends initial connection window to the remote endpoint if necessary.
+   * 如果有必要将连接窗口发送到远程节点
    */
   private void sendInitialConnectionWindow() throws Http2Exception {
     if (!initialWindowSent && ctx.channel().isActive()) {
+      // 获取  stream
       Http2Stream connectionStream = connection().connectionStream();
+      // 获取本地 size
       int currentSize = connection().local().flowController().windowSize(connectionStream);
+      // 初始窗口将当前窗口，不会出现负数么？
       int delta = initialConnectionWindow - currentSize;
+      // 增加窗口
       decoder().flowController().incrementWindowSize(connectionStream, delta);
       initialWindowSent = true;
       ctx.flush();

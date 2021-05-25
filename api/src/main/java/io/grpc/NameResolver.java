@@ -746,7 +746,7 @@ public abstract class NameResolver {
 
     /**
      * Gets the Service Config parsed by {@link NameResolver.Helper#parseServiceConfig(Map)}.
-     *
+     *获取由{@link NameResolver.Helper#parseServiceConfig(Map)}解析的服务配置。
      * @since 1.21.0
      */
     @Nullable
