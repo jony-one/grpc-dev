@@ -390,7 +390,7 @@ public class MessageDeframer implements Closeable, Deframer {
   /**
    * Processes the GRPC compression header which is composed of the compression flag and the outer
    * frame length.
-   * 处理消息头，获取压缩标识和消息长度，并进行校验
+   *
    */
   private void processHeader() {
     int type = nextFrame.readUnsignedByte();

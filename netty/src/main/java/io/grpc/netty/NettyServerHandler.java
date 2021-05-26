@@ -458,6 +458,7 @@ class NettyServerHandler extends AbstractNettyHandler {
           StatsTraceContext.newServerContext(streamTracerFactories, method, metadata);
 
       // 监控 stream 状态
+      // 将请求头重解析出来的消息都缓存到当前上下文重
       NettyServerStream.TransportState state = new NettyServerStream.TransportState(
           this,
           ctx.channel().eventLoop(),
